@@ -1,6 +1,6 @@
 HI I WROTE SOME NOTES. if u guys want to change anything or think the development is going in the wrong direction just sound out. i write a lot of instructions cus i think itll be easier for u guys if u hv some kind of direction but dont need to 100% follow ah
 
-https://vercel.com/gabriels-projects-83e3cc50/dell-innovatedash/BcabL2acAz2j9s6p1qXWhdWxDrzp
+https://dell-innovatedash-gxeunr41p-gabriels-projects-83e3cc50.vercel.app
 
 # Set-up
 how to run the repository (can paste this thing into chatgpt if youre unfamiliar)
