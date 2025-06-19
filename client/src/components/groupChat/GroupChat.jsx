@@ -77,6 +77,10 @@ const GroupChat = ({ group, onBack }) => {
           </div>
           <div className="flex-1">
             <h2 className="font-medium text-base text-white">{group.name}</h2>
+            <div className="flex items-center text-xs text-white/90">
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-1.5 animate-pulse border border-white"></div>
+                <span>online</span>
+            </div>
           </div>
         </div>
       </div>
