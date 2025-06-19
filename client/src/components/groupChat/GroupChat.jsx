@@ -77,7 +77,6 @@ const GroupChat = ({ group, onBack }) => {
           </div>
           <div className="flex-1">
             <h2 className="font-medium text-base text-white">{group.name}</h2>
-            <p className="text-xs text-white/80">Support Assistant 💕</p>
           </div>
         </div>
       </div>
