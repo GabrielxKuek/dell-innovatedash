@@ -1,5 +1,6 @@
 HI I WROTE SOME NOTES. if u guys want to change anything or think the development is going in the wrong direction just sound out. i write a lot of instructions cus i think itll be easier for u guys if u hv some kind of direction but dont need to 100% follow ah
 </br>
+</br>
 can also msg me if any part unclear ah
 
 https://dell-innovatedash.vercel.app
