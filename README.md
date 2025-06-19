@@ -1,4 +1,6 @@
 HI I WROTE SOME NOTES. if u guys want to change anything or think the development is going in the wrong direction just sound out. i write a lot of instructions cus i think itll be easier for u guys if u hv some kind of direction but dont need to 100% follow ah
+</br>
+can also msg me if any part unclear ah
 
 https://dell-innovatedash.vercel.app
 
@@ -22,6 +24,7 @@ npm run dev
 #### note
 - the questions flow is in client/src/data/treatmentData.js
 - each file (eg treatmentData.js) is meant to be one "quiz", can study the decision tree to see what the format is like ah
+- so this means each group chat is gna be linked to one file
 - i just chatgpt this tree cus i tired so might change a little. rn its all decisions in one file, but format should be relatively similar
 - click on group > pull data from appropriate file > display qna stuff
 
