@@ -1,6 +1,6 @@
 // client/src/services/api/AIRiskEngine.js
 class AIRiskEngine {
-    constructor(apiKey, model = 'gpt-4') {
+    constructor(apiKey, model = 'gpt-4o-mini') {
       this.apiKey = apiKey;
       this.model = model;
       this.baseURL = 'https://api.openai.com/v1/chat/completions';
@@ -292,6 +292,7 @@ class AIRiskEngine {
         needsFollowUp: null
       };
     }
+
   
     getFinalRiskSystemPrompt() {
       return `You are a medical AI specialist providing cancer risk assessments. Based on patient information, calculate a comprehensive risk assessment.
@@ -365,17 +366,29 @@ class AIRiskEngine {
     }
   
     buildDataAnalysisPrompt(collectedInfo) {
+      // Clean and validate the data to prevent API errors
+      const cleanData = {
+        age: collectedInfo.age || 'Not provided',
+        gender: collectedInfo.gender || 'Not provided',
+        height: collectedInfo.height || 'Not provided',
+        weight: collectedInfo.weight || 'Not provided',
+        familyHistory: collectedInfo.familyHistory || 'Not provided',
+        smokingStatus: collectedInfo.smoking?.status || 'Not provided',
+        smokingDetails: collectedInfo.smoking?.details || 'Not provided',
+        alcoholFrequency: collectedInfo.alcohol?.frequency || 'Not provided'
+      };
+  
       return `Analyze this structured health data and provide a comprehensive cancer risk assessment:
   
   PATIENT DATA:
-  Age: ${collectedInfo.age}
-  Gender: ${collectedInfo.gender}
-  Height: ${collectedInfo.height}
-  Weight: ${collectedInfo.weight}
-  Family History: ${collectedInfo.familyHistory}
-  Smoking Status: ${collectedInfo.smoking.status}
-  Smoking Details: ${collectedInfo.smoking.details || 'N/A'}
-  Alcohol Frequency: ${collectedInfo.alcohol.frequency}
+  Age: ${cleanData.age}
+  Gender: ${cleanData.gender}
+  Height: ${cleanData.height}
+  Weight: ${cleanData.weight}
+  Family History: ${cleanData.familyHistory}
+  Smoking Status: ${cleanData.smokingStatus}
+  Smoking Details: ${cleanData.smokingDetails}
+  Alcohol Frequency: ${cleanData.alcoholFrequency}
   
   ANALYSIS REQUIREMENTS:
   1. Calculate overall cancer risk percentage (0-100%) based on established risk factors
@@ -385,17 +398,17 @@ class AIRiskEngine {
   5. Consider age, gender, BMI, family history, and lifestyle factors
   6. Include appropriate medical disclaimers
   
-  Return JSON format:
+  You must respond with valid JSON in this exact format:
   {
-    "riskPercentage": number (0-100),
-    "riskLevel": "Low|Low-Moderate|Moderate|Moderate-High|High",
-    "confidence": "Low|Medium|High",
-    "keyFactors": ["factor1", "factor2"],
-    "protectiveFactors": ["factor1", "factor2"],
-    "recommendations": ["rec1", "rec2"],
-    "additionalInfo": "string with relevant context",
-    "disclaimer": "medical disclaimer",
-    "cancerTypesAssessed": ["general", "lung", "breast", etc]
+    "riskPercentage": 25,
+    "riskLevel": "Low-Moderate",
+    "confidence": "Medium",
+    "keyFactors": ["Age over 40", "Family history"],
+    "protectiveFactors": ["Non-smoker", "Regular exercise"],
+    "recommendations": ["Regular screening", "Maintain healthy lifestyle"],
+    "additionalInfo": "Based on provided health information",
+    "disclaimer": "This assessment is for educational purposes only",
+    "cancerTypesAssessed": ["general"]
   }`;
     }
   
