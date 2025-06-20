@@ -150,19 +150,13 @@ class AIRiskEngine {
       };
     }
   
-    async generateFollowUpMessage(riskAssessment, healthData) {
-      const prompt = `Based on this risk assessment, generate a conversational follow-up message:
+    async generateConversationalResponse(conversationHistory) {
+      if (!this.apiKey) {
+        throw new Error('OpenAI API key not configured');
+      }
   
-  Risk Assessment: ${JSON.stringify(riskAssessment)}
-  Current Health Data: ${JSON.stringify(healthData)}
-  
-  Generate a caring, informative message that:
-  1. Acknowledges the current risk level
-  2. Explains key factors in simple terms
-  3. Asks one specific follow-up question to gather more information
-  4. Maintains a supportive tone
-  
-  Return only the message text, not JSON.`;
+      const systemPrompt = this.getConversationalSystemPrompt();
+      const conversationPrompt = this.buildConversationPrompt(conversationHistory);
   
       try {
         const response = await fetch(this.baseURL, {
@@ -176,24 +170,271 @@ class AIRiskEngine {
             messages: [
               {
                 role: 'system',
-                content: 'You are a caring health assistant who explains medical information in a warm, supportive way.'
+                content: systemPrompt
               },
               {
-                role: 'user',
-                content: prompt
+                role: 'user', 
+                content: conversationPrompt
               }
             ],
             temperature: 0.7,
-            max_tokens: 200
+            max_tokens: 300,
+            response_format: { type: "json_object" }
           })
         });
   
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.statusText}`);
+        }
+  
         const result = await response.json();
-        return result.choices[0].message.content.trim();
+        return this.parseConversationalResponse(result.choices[0].message.content);
       } catch (error) {
-        console.error('Follow-up generation failed:', error);
-        return "Thank you for sharing that information. Can you tell me more about any symptoms you might be experiencing?";
+        console.error('Conversational response failed:', error);
+        return this.getFallbackConversationalResponse();
       }
+    }
+  
+    getConversationalSystemPrompt() {
+      return `You are a caring AI health assistant conducting a cancer risk assessment interview. Your goal is to collect the following REQUIRED information through natural conversation:
+  
+  REQUIRED INFORMATION:
+  1. Age (specific number)
+  2. Sex/Gender (male/female) 
+  3. Height and Weight (for BMI calculation)
+  4. Family history of cancer (any relatives, what type)
+  5. Smoking status and details (never/former/current, frequency, type)
+  6. Alcohol consumption (frequency and amount)
+  
+  CRITICAL RULES:
+  - NEVER repeat questions that have already been asked
+  - ALWAYS acknowledge information the user has already provided
+  - Build on previous answers rather than asking the same thing again
+  - Ask ONE question at a time
+  - Move systematically through missing information only
+  
+  CONVERSATION GUIDELINES:
+  - Be warm, empathetic, and professional
+  - Follow up on answers that need clarification (e.g., if they smoke, ask how often and what type)
+  - Keep responses conversational and friendly
+  - Don't overwhelm with medical jargon
+  - Show that you're listening by acknowledging their responses
+  - Reference what they've already told you to show you're paying attention
+  
+  COMPLETION CRITERIA:
+  Only mark as complete when you have ALL required information with sufficient detail.
+  
+  RESPONSE FORMAT:
+  Return JSON with:
+  {
+    "message": "Your conversational response",
+    "isComplete": boolean (true only when ALL required info collected),
+    "missingInfo": ["list", "of", "missing", "categories"],
+    "needsFollowUp": "category that needs more detail or null"
+  }`;
+    }
+  
+    buildConversationPrompt(conversationHistory) {
+      const conversation = conversationHistory.map(msg => 
+        `${msg.type === 'sent' ? 'User' : 'AI'}: ${msg.text}`
+      ).join('\n');
+  
+      return `Here is the conversation so far:
+  
+  ${conversation}
+  
+  ANALYSIS TASK:
+  1. Carefully review what information the user has ALREADY PROVIDED
+  2. Identify what information is still MISSING
+  3. Check if any previous answers need follow-up clarification
+  4. DO NOT ask questions that have already been answered
+  
+  INFORMATION CHECKLIST - Mark as COLLECTED or MISSING:
+  - Age: Look for specific age number in user responses
+  - Sex/Gender: Look for male/female identification
+  - Height: Look for height measurement
+  - Weight: Look for weight measurement  
+  - Family history: Look for any mention of cancer in family members
+  - Smoking: Look for smoking status (never/former/current) and details
+  - Alcohol: Look for drinking habits and frequency
+  
+  RESPONSE STRATEGY:
+  - If information is MISSING: Ask for it naturally
+  - If information was PROVIDED but needs clarification: Ask follow-up
+  - If ALL information is COLLECTED: Mark as complete
+  - ALWAYS acknowledge what they've already shared before asking for new information
+  
+  Example good response: "Thanks for telling me you're 45 years old. Now, could you share your height and weight so I can calculate your BMI?"
+  
+  Generate your response following these guidelines.`;
+    }
+  
+    parseConversationalResponse(response) {
+      try {
+        const parsed = JSON.parse(response);
+        return {
+          message: parsed.message || "Could you tell me more about that?",
+          isComplete: parsed.isComplete || false,
+          missingInfo: parsed.missingInfo || [],
+          needsFollowUp: parsed.needsFollowUp || null
+        };
+      } catch (error) {
+        console.error('Failed to parse conversational response:', error);
+        return this.getFallbackConversationalResponse();
+      }
+    }
+  
+    getFallbackConversationalResponse() {
+      return {
+        message: "Thank you for that information. To help me provide the best assessment, could you share your age?",
+        isComplete: false,
+        missingInfo: ['age'],
+        needsFollowUp: null
+      };
+    }
+  
+    getFinalRiskSystemPrompt() {
+      return `You are a medical AI specialist providing cancer risk assessments. Based on patient information, calculate a comprehensive risk assessment.
+  
+  ASSESSMENT CRITERIA:
+  - Use established medical literature and risk factors
+  - Consider age, sex, family history, lifestyle factors (smoking, alcohol, BMI)
+  - Be conservative and evidence-based
+  - Include both risk factors and protective factors
+  - Provide actionable recommendations
+  
+  RISK CATEGORIES:
+  - 0-15%: Low risk
+  - 16-30%: Low-Moderate risk  
+  - 31-50%: Moderate risk
+  - 51-70%: Moderate-High risk
+  - 71-100%: High risk
+  
+  IMPORTANT:
+  - Always include medical disclaimers
+  - Recommend professional consultation
+  - Be specific about which cancer types the assessment covers
+  - Include protective factors when present
+  
+  Return comprehensive JSON assessment with all fields filled.`;
+    }
+  
+    async calculateFinalRiskFromData(collectedInfo) {
+      if (!this.apiKey) {
+        throw new Error('OpenAI API key not configured');
+      }
+  
+      const systemPrompt = this.getFinalRiskSystemPrompt();
+      const dataPrompt = this.buildDataAnalysisPrompt(collectedInfo);
+  
+      try {
+        const response = await fetch(this.baseURL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: this.model,
+            messages: [
+              {
+                role: 'system',
+                content: systemPrompt
+              },
+              {
+                role: 'user',
+                content: dataPrompt
+              }
+            ],
+            temperature: 0.2,
+            max_tokens: 800,
+            response_format: { type: "json_object" }
+          })
+        });
+  
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.statusText}`);
+        }
+  
+        const result = await response.json();
+        return this.parseFinalRiskResponse(result.choices[0].message.content);
+      } catch (error) {
+        console.error('Final risk calculation failed:', error);
+        return this.getFallbackFinalRisk();
+      }
+    }
+  
+    buildDataAnalysisPrompt(collectedInfo) {
+      return `Analyze this structured health data and provide a comprehensive cancer risk assessment:
+  
+  PATIENT DATA:
+  Age: ${collectedInfo.age}
+  Gender: ${collectedInfo.gender}
+  Height: ${collectedInfo.height}
+  Weight: ${collectedInfo.weight}
+  Family History: ${collectedInfo.familyHistory}
+  Smoking Status: ${collectedInfo.smoking.status}
+  Smoking Details: ${collectedInfo.smoking.details || 'N/A'}
+  Alcohol Frequency: ${collectedInfo.alcohol.frequency}
+  
+  ANALYSIS REQUIREMENTS:
+  1. Calculate overall cancer risk percentage (0-100%) based on established risk factors
+  2. Identify specific risk factors present in this patient
+  3. Identify any protective factors
+  4. Provide specific, actionable recommendations
+  5. Consider age, gender, BMI, family history, and lifestyle factors
+  6. Include appropriate medical disclaimers
+  
+  Return JSON format:
+  {
+    "riskPercentage": number (0-100),
+    "riskLevel": "Low|Low-Moderate|Moderate|Moderate-High|High",
+    "confidence": "Low|Medium|High",
+    "keyFactors": ["factor1", "factor2"],
+    "protectiveFactors": ["factor1", "factor2"],
+    "recommendations": ["rec1", "rec2"],
+    "additionalInfo": "string with relevant context",
+    "disclaimer": "medical disclaimer",
+    "cancerTypesAssessed": ["general", "lung", "breast", etc]
+  }`;
+    }
+  
+    parseFinalRiskResponse(response) {
+      try {
+        const parsed = JSON.parse(response);
+        
+        return {
+          riskPercentage: Math.min(Math.max(parsed.riskPercentage || 0, 0), 100),
+          riskLevel: parsed.riskLevel || 'Moderate',
+          confidence: parsed.confidence || 'Medium',
+          keyFactors: parsed.keyFactors || [],
+          protectiveFactors: parsed.protectiveFactors || [],
+          recommendations: parsed.recommendations || [],
+          additionalInfo: parsed.additionalInfo || '',
+          disclaimer: parsed.disclaimer || 'This assessment is for educational purposes only. Please consult a healthcare professional for proper medical evaluation.',
+          cancerTypesAssessed: parsed.cancerTypesAssessed || ['general'],
+          timestamp: new Date().toISOString()
+        };
+      } catch (error) {
+        console.error('Failed to parse final risk response:', error);
+        return this.getFallbackFinalRisk();
+      }
+    }
+  
+    getFallbackFinalRisk() {
+      return {
+        riskPercentage: 25,
+        riskLevel: 'Moderate',
+        confidence: 'Low',
+        keyFactors: ['Assessment incomplete'],
+        protectiveFactors: [],
+        recommendations: ['Consult with a healthcare professional for proper assessment'],
+        additionalInfo: 'Risk calculation was incomplete due to technical issues.',
+        disclaimer: 'This assessment could not be completed. Please consult a healthcare professional.',
+        cancerTypesAssessed: ['general'],
+        timestamp: new Date().toISOString(),
+        isError: true
+      };
     }
   }
   

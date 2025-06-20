@@ -18,6 +18,8 @@ const AIGroupChat = ({ group, onBack }) => {
   // AI-related state
   const [healthCollector] = useState(() => new HealthDataCollector());
   const [aiEngine] = useState(() => new AIRiskEngine(import.meta.env.VITE_OPENAI_API_KEY));
+
+  // Add this debug line temporarily
   const [currentRisk, setCurrentRisk] = useState(null);
   const [isCalculatingRisk, setIsCalculatingRisk] = useState(false);
   const [aiTyping, setAiTyping] = useState(false);

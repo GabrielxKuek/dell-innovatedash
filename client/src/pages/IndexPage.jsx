@@ -2,7 +2,8 @@
 import { useState } from "react"
 import Border from '../components/phoneComponents/Border';
 import GroupList from '../components/groupChat/GroupList';
-import AIGroupChat from '../components/groupChat/AIGroupChat'; // Updated import
+import GroupChat from '../components/groupChat/GroupChat';
+import AIQuiz from '../components/groupChat/AIQuiz';
 import { groupsData } from '../data/groupsData';
 
 const IndexPage = () => {
@@ -42,10 +43,18 @@ const IndexPage = () => {
             />
           </div>
         ) : (
-          <AIGroupChat 
-            group={selectedGroup} 
-            onBack={handleBackToList} 
-          />
+          // Choose between regular chat and AI quiz based on group type
+          selectedGroup?.isAIQuiz ? (
+            <AIQuiz 
+              group={selectedGroup} 
+              onBack={handleBackToList} 
+            />
+          ) : (
+            <GroupChat 
+              group={selectedGroup} 
+              onBack={handleBackToList} 
+            />
+          )
         )}
       </Border>
     </div>
