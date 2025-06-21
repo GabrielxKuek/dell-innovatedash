@@ -1,3 +1,4 @@
+// client/src/data/groupsData.js
 export const groupsData = [
   {
     id: 1,
@@ -34,5 +35,12 @@ export const groupsData = [
     name: "Example Quiz 6",
     lastMessage: "tell me what types of quiz to add",
     avatar: "https://i.pinimg.com/736x/6a/fc/5c/6afc5c43a5050054d7482202e3b75239.jpg"
+  },
+  {
+    id: 7,
+    name: "AI Cancer Risk Assessment",
+    lastMessage: "Get personalized risk analysis with AI",
+    avatar: "🤖",
+    isAIQuiz: true
   }
 ];
