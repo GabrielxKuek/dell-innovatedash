@@ -162,5 +162,203 @@ export const chatFlows = {
         { id: 'restart', text: "Good to know! What else?", nextId: 1 }
       ]
     }
+  },
+
+
+
+  7: { // demo for actual
+    1: {
+      id: 1,
+      message: "Having a great time recently? Tryna keep a good healthy life style ?~ 😍 ",
+      options: [
+        { text: "pretty good ~ but who are u ?", nextId: 2 },
+        { text: "not so sure, hard times", nextId: 3 },
+        { text: "why should I, I don't even know u", nextId: 4 },
+      ]
+    },
+    2: {
+      id: 2,
+      message:"Hi ~ GREAT to hear that, I'm your personal doctor, can I share you with something ~😘",
+      options: [
+        { text: "wow, what do u wanna share with me?", nextId: 5 },
+        { text: "Hey, I exercise a lot so don't worry, is it something interesting that I should know? ", nextId: 5 },
+      ]
+    },
+    3: {
+      id: 3,
+      message:"Hi ~ so sorry to hear that, wanna share anything with me?😘",
+      options: [
+        { text: "Feeling down recently, can I trust you?", nextId: 4 },
+        { text: "Sorry, who are u?", nextId: 4 },
+      ]
+    },
+    4: {
+      id: 4,
+      message:"Hi ~ You can definitely trust me, I'm your personal doctor, can I share something with u?😘",
+      options: [
+        { text: "Fine, go ahead ", nextId: 5 },     
+      ]
+    },
+    5: {
+      id: 5,
+      message:"Well, wanna know something about cancer? The topic seems to be a bit far but yet close~ \n Your health is my job!!",
+      options: [
+        { text: "Sure ~ go on", nextId: 6 },     
+      ]
+    },
+ //------------Quiz starts from here~~~------------
+    6: {
+      id: 6,
+      message:"Alright, Let's get started...\n How much do you know about cancer",    
+      options: [
+        { id: 'dontknow', text: "Honestly, not much but I know it's serious.", nextId: 7 },
+        { id: 'dontcare', text: "I don't think I will get it lah, wouldn't be unlucky", nextId: 7 },
+        { id: 'care', text: "It's very serious and I hope I won't get it", nextId: 7 },
+      ]
+    },
+
+    7: {
+      id: 7,
+      message:"Actually, there is always possibility of getting cancer\nHowever, not a big deal\n\nStaright to the point..\nI'm gonna ask you a few Questions, Come on, join me ",    
+      options: [
+        { text: "Sounds fun", nextId: 8 },
+        { text: "I'm down for this", nextId: 8 },
+        { text: "errrh Okay", nextId: 8 },
+      ]
+    },
+
+    8: {
+      id: 8,
+      message:" You step onto a magical double-decker. The top deck is a sky garden, the bottom deck is a buffet. Where do you head?",    
+      options: [
+        { id: '', text: "Sky garden please! Fresh air, trees…", nextId: 9 },
+        { id: '', text: "Buffet of dreams?! I deserve this.", nextId: 9 },
+        { id: '', text: "Nah, I just want to nap somewhere comfy", nextId: 9 },
+      ]
+    },
+
+    9: {
+      id: 9,
+      message:"Next ~ a cat offers you a cupcake that looks… suspiciously glowing~\nWhat do you do?",    
+      options: [
+        { id: '', text: "No thanks", nextId: 10 },
+        { id: '', text: "Just one bite", nextId: 10 },
+        { id: '', text: "Not a big one, just finish up", nextId: 10 },
+      ]
+    },
+
+    10: {
+      id: 10,
+      message:"Now, you arrive a stop called'Exercise Station'. You hear music and dancing upstairs. But your seat is so comfy...",    
+      options: [
+        { id: '', text: "I'm up! Time to move my body! Might meet some cool people too!", nextId: 11 },
+        { id: '', text: "Maybe later... I'll just stretch a little here", nextId: 11 },
+        { id: '', text: "It's okay, my thumb gets a workout scrolling TikTok anyway", nextId: 11 },
+      ]
+    },
+
+    11: {
+      id: 11,
+      message:"Suddenly the sun shines extra bright. You reach into your bag",    
+      options: [
+        { id: '', text: "Got my hat and sunscreen! Safety first!", nextId: 12 },
+        { id: '', text: "Only sunglasses. Hope that's enough", nextId: 12 },
+        { id: '', text: "Ehh, I never burn. I want that glow!", nextId: 12 },
+      ]
+    },
+
+    12: {
+      id: 12,
+      message:"A food truck appears with two tempting smells...",    
+      options: [
+        { id: '', text: "Grilled veggies on quinoa? Yes please", nextId: 13 },
+        { id: '', text: "Chicken rice! Balanced enough, right?", nextId: 13 },
+        { id: '', text: "Smoked sausages and bacon? Count me in!", nextId: 13 },
+      ]
+    },
+    13: {
+      id: 13,
+      message:"Dinner time ~\nA robotic waiter floats by offering you a drink...",    
+      options: [
+        { id: '', text: "Sparkling water, please. My liver deserves a break", nextId: 14 },
+        { id: '', text: "A bit of wine helps me relax", nextId: 14 },
+        { id: '', text: "Alright, fresh juice looks nice", nextId: 14 },
+      ]
+    },
+
+    14: {
+      id: 14,
+      message:"Been asked,'anyone in your family have a history of cancer?'",    
+      options: [
+        { id: '', text: "Yup, but not many", nextId: 15 },
+        { id: '', text: "Ya, I've got a few", nextId: 15 },
+        { id: '', text: "Nope, not that I know of", nextId: 15 },
+        { id: '', text: "I'm adopted, so I'm not sure", nextId: 15 },
+      ]
+    },
+
+    15: {
+      id: 15,
+      message:" Now, You pass a glowing vending machine labeled “Free Health Check-Ups",    
+      options: [
+        { id: '', text: "Let'sss go, All gain, no pain", nextId: 17 },
+        { id: '', text: "Hmm... Maybe next time, I'm good", nextId: 16 },
+        { id: '', text: "Never like it", nextId: 17 },
+      ]
+    },
+
+    16: {
+      id: 16,
+      message:"Would you come back by any chance?",    
+      options: [
+        { id: '', text: "Ya, probabily", nextId: 17 },
+        { id: '', text: "Maybe, if somebody ask", nextId: 17 },
+        { id: '', text: "errh..Depends on my mood", nextId: 17 },
+      ]
+    },
+
+    17: {
+      id: 17,
+      message:"After a satisfying meal, you enter a quiet zone. You see beds and relaxing music\n What now?",    
+      options: [
+        { id: '', text: "Time for a proper nap", nextId: 21 },
+        { id: '', text: "I'll lie down but keep scrolling Tiktok for a WHILE", nextId: 19 },
+      ]
+    },
+
+    19: {
+      id: 19,
+      message:"Now is 12:00pm, should I sleep now?",    
+      options: [
+        { id: '', text: "A talking cigarette hops on board. 'Miss me?'", nextId: 20 },
+        { id: '', text: "Time for supper", nextId: 21 },
+        { id: '', text: "Start sleeping ", nextId: 21 },
+      ]
+    },
+
+    20: {
+      id: 20,
+      message:"'Just one cigarette should be fine'",    
+      options: [
+        { id: '', text: "fine", nextId: 21 },
+        { id: '', text: "Nah, forget it", nextId: 21 },
+      ]
+    },
+
+    21: {
+      id: 21,
+      message:"A snack box appears during tea time, what do you expect?",    
+      options: [
+        { id: '', text: "box of chocolate is the best", nextId: 22 },
+        { id: '', text: "Some nuts sounds good", nextId: 22 },
+        { id: '', text: "Fruits are what I need ", nextId: 22 },
+      ]
+    },
+
+     22: {
+      id: 22,
+      message:"ENNND(to be continued)", //For Now
+
+    },   
   }
 };
