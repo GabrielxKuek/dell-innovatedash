@@ -54,7 +54,7 @@ const AIQuiz = ({ group, onBack }) => {
     },
     {
       id: 'smoking',
-      text: "Do you smoke or have you ever smoked?.",
+      text: "Do you smoke or have you ever smoked?",
       key: 'smoking'
     },
     {

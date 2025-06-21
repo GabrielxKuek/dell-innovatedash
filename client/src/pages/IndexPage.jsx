@@ -2,8 +2,7 @@
 import { useState } from "react"
 import Border from '../components/phoneComponents/Border';
 import GroupList from '../components/groupChat/GroupList';
-import GroupChat from '../components/groupChat/GroupChat';
-import AIQuiz from '../components/groupChat/AIQuiz';
+import AIGroupChat from '../components/groupChat/AIGroupChat'; // Updated import
 import { groupsData } from '../data/groupsData';
 
 const IndexPage = () => {
@@ -21,7 +20,7 @@ const IndexPage = () => {
   };
 
   // Check if OpenAI API key is configured
-  const isAIConfigured = !!import.meta.env.VITE_OPENAI_API_KEY;
+  const isAIConfigured = import.meta.env.VITE_OPENAI_API_KEY;
 
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex justify-center items-center overflow-hidden">
@@ -43,18 +42,10 @@ const IndexPage = () => {
             />
           </div>
         ) : (
-          // Choose between regular chat and AI quiz based on group type
-          selectedGroup?.isAIQuiz ? (
-            <AIQuiz 
-              group={selectedGroup} 
-              onBack={handleBackToList} 
-            />
-          ) : (
-            <GroupChat 
-              group={selectedGroup} 
-              onBack={handleBackToList} 
-            />
-          )
+          <AIGroupChat 
+            group={selectedGroup} 
+            onBack={handleBackToList} 
+          />
         )}
       </Border>
     </div>
