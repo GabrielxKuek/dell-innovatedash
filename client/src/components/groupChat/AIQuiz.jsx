@@ -1,4 +1,7 @@
-// client/src/components/groupChat/AIQuiz.jsx
+const handleBackToList = () => {
+    setCurrentView('list');
+    setSelectedGroup(null);
+  };// client/src/components/groupChat/AIQuiz.jsx
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Loader, AlertCircle } from 'lucide-react';
 import AIRiskEngine from '../../services/api/AIRiskEngine';
@@ -54,7 +57,7 @@ const AIQuiz = ({ group, onBack }) => {
     },
     {
       id: 'smoking',
-      text: "Do you smoke or have you ever smoked?.",
+      text: "Do you smoke or have you ever smoked? Please tell me your smoking status.",
       key: 'smoking'
     },
     {
@@ -343,12 +346,15 @@ const AIQuiz = ({ group, onBack }) => {
         </div>
       </div>
 
-      {/* Final Risk Assessment */}
+      {/* Final Risk Assessment - Full Screen */}
       {isAssessmentComplete && (
-        <FinalRiskDisplay 
-          riskAssessment={finalRiskAssessment}
-          isCalculating={isCalculatingFinalRisk}
-        />
+        <div className="absolute inset-0 bg-white z-50">
+          <FinalRiskDisplay 
+            riskAssessment={finalRiskAssessment}
+            isCalculating={isCalculatingFinalRisk}
+            onBack={handleBackToList}
+          />
+        </div>
       )}
 
       {/* Input Area */}
