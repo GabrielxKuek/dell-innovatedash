@@ -1,22 +1,86 @@
-// src/pages/IndexPage.jsx - Enhanced with navigation
-import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+// src/pages/IndexPage.jsx - Implementation Ready
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
 import Border from '../components/phoneComponents/Border';
 import GroupList from '../components/groupChat/GroupList';
 import GroupChat from '../components/groupChat/GroupChat';
 import AIQuiz from '../components/groupChat/AIQuiz';
-import Navigation from '../components/shared/Navigation';
+import ResponsiveOSInterface from '../components/ResponsiveOSInterface';
 import { groupsData } from '../data/groupsData';
-import { BarChart3, Users, Heart, Settings } from 'lucide-react';
 
 const IndexPage = () => {
   const navigate = useNavigate();
-  const [currentView, setCurrentView] = useState('list');
+  const location = useLocation();
+  const [currentView, setCurrentView] = useState('os'); // Start with OS interface
   const [selectedGroup, setSelectedGroup] = useState(null);
+
+  useEffect(() => {
+    // Check if we should open a specific quiz from state
+    if (location.state?.openAIQuiz) {
+      // Find AI quiz in groups data
+      const aiQuiz = groupsData.find(group => group.isAIQuiz);
+      if (aiQuiz) {
+        setSelectedGroup(aiQuiz);
+        setCurrentView('chat');
+      }
+    } else if (location.state?.openQuickQuiz) {
+      // Open first group as quick quiz
+      setSelectedGroup(groupsData[0]);
+      setCurrentView('chat');
+    }
+  }, [location.state]);
+
+  const handleAppSelect = (app) => {
+    console.log('App selected:', app); // Debug log
+    
+    switch (app.route) {
+      case '/ai-quiz':
+        // Find AI quiz in groups data
+        const aiQuiz = groupsData.find(group => group.isAIQuiz);
+        if (aiQuiz) {
+          setSelectedGroup(aiQuiz);
+          setCurrentView('chat');
+        } else {
+          // Fallback: show quiz list
+          setCurrentView('list');
+        }
+        break;
+      case '/quick-quiz':
+        // Open first quiz as quick quiz
+        setSelectedGroup(groupsData[0]);
+        setCurrentView('chat');
+        break;
+      case '/dashboard':
+        navigate('/dashboard');
+        break;
+      case '/prevention':
+        navigate('/prevention');
+        break;
+      case '/community':
+        navigate('/community');
+        break;
+      case '/analytics':
+        navigate('/analytics');
+        break;
+      case '/scheduler':
+        setCurrentView('list'); // Show quiz list for now
+        break;
+      case '/settings':
+        setCurrentView('settings');
+        break;
+      default:
+        setCurrentView('list');
+    }
+  };
 
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
     setCurrentView('chat');
+  };
+
+  const handleBackToOS = () => {
+    setCurrentView('os');
+    setSelectedGroup(null);
   };
 
   const handleBackToList = () => {
@@ -27,48 +91,12 @@ const IndexPage = () => {
   // Check if OpenAI API key is configured
   const isAIConfigured = !!import.meta.env.VITE_OPENAI_API_KEY;
 
-  // Quick action cards for main features
-  const quickActions = [
-    {
-      title: "Health Dashboard",
-      description: "View your risk assessment and health insights",
-      icon: BarChart3,
-      color: "blue",
-      action: () => navigate('/dashboard')
-    },
-    {
-      title: "Prevention Plan",
-      description: "Get personalized prevention recommendations",
-      icon: Heart,
-      color: "red",
-      action: () => navigate('/prevention')
-    },
-    {
-      title: "Community Hub",
-      description: "Connect with health community and challenges",
-      icon: Users,
-      color: "green",
-      action: () => navigate('/community')
-    }
-  ];
+  // Render OS Interface (no phone border)
+  if (currentView === 'os') {
+    return <ResponsiveOSInterface onAppSelect={handleAppSelect} />;
+  }
 
-  const QuickActionCard = ({ title, description, icon: Icon, color, action }) => (
-    <button
-      onClick={action}
-      className={`w-full p-4 rounded-lg border-2 border-transparent hover:border-${color}-200 bg-white shadow-sm hover:shadow-md transition-all text-left`}
-    >
-      <div className="flex items-center gap-3">
-        <div className={`p-2 bg-${color}-100 rounded-lg`}>
-          <Icon className={`w-5 h-5 text-${color}-600`} />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-medium text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
-        </div>
-      </div>
-    </button>
-  );
-
+  // Render other views in phone border for consistency
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex justify-center items-center overflow-hidden">
       <Border>
@@ -78,14 +106,14 @@ const IndexPage = () => {
             <div className="bg-white p-4 border-b">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">Health Assistant</h1>
-                  <p className="text-sm text-gray-600">Your AI-powered health companion</p>
+                  <h1 className="text-xl font-bold text-gray-900">Health Assessments</h1>
+                  <p className="text-sm text-gray-600">Choose your health quiz</p>
                 </div>
                 <button 
-                  onClick={() => navigate('/analytics')}
-                  className="p-2 hover:bg-gray-100 rounded-full"
+                  onClick={handleBackToOS}
+                  className="text-blue-600 text-sm font-medium hover:text-blue-800"
                 >
-                  <Settings className="w-5 h-5 text-gray-600" />
+                  ← Back to Home
                 </button>
               </div>
             </div>
@@ -99,29 +127,59 @@ const IndexPage = () => {
               </div>
             )}
             
-            {/* Quick Actions */}
-            <div className="p-4 bg-white border-b">
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">Quick Actions</h2>
-              <div className="space-y-2">
-                {quickActions.map((action, index) => (
-                  <QuickActionCard key={index} {...action} />
-                ))}
-              </div>
-            </div>
-
-            {/* Health Assessments */}
+            {/* Quiz List */}
             <div className="flex-1 bg-gray-50">
-              <div className="p-4">
-                <h2 className="text-sm font-semibold text-gray-700 mb-3">Health Assessments</h2>
-              </div>
               <GroupList 
                 groups={groupsData} 
                 onGroupSelect={handleGroupSelect} 
               />
             </div>
+          </div>
+        ) : currentView === 'settings' ? (
+          <div className="h-full flex flex-col">
+            {/* Settings View */}
+            <div className="bg-white p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h1 className="text-xl font-bold text-gray-900">Settings</h1>
+                <button 
+                  onClick={handleBackToOS}
+                  className="text-blue-600 text-sm font-medium hover:text-blue-800"
+                >
+                  ← Back to Home
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex-1 p-6 bg-gray-50">
+              <div className="space-y-4">
+                <div className="bg-white rounded-lg p-4 border">
+                  <h3 className="font-semibold text-gray-900 mb-2">API Configuration</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">OpenAI API Status</span>
+                    <span className={`text-sm font-medium ${isAIConfigured ? 'text-green-600' : 'text-red-600'}`}>
+                      {isAIConfigured ? 'Connected' : 'Not Configured'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-lg p-4 border">
+                  <h3 className="font-semibold text-gray-900 mb-2">About</h3>
+                  <p className="text-sm text-gray-600">
+                    Singapore Health Platform v1.0
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    AI-powered health companion for cancer prevention
+                  </p>
+                </div>
 
-            {/* Navigation */}
-            <Navigation currentPage="home" />
+                <button
+                  onClick={() => setCurrentView('list')}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Health Assessments
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           // Chat view - choose between regular chat and AI quiz
@@ -129,12 +187,12 @@ const IndexPage = () => {
             {selectedGroup?.isAIQuiz ? (
               <AIQuiz 
                 group={selectedGroup} 
-                onBack={handleBackToList} 
+                onBack={handleBackToOS} 
               />
             ) : (
               <GroupChat 
                 group={selectedGroup} 
-                onBack={handleBackToList} 
+                onBack={handleBackToOS} 
               />
             )}
           </div>
