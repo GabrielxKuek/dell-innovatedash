@@ -1,454 +1,409 @@
-// client/src/services/api/AIRiskEngine.js
-class AIRiskEngine {
-    constructor(apiKey, model = 'gpt-4o-mini') {
-      this.apiKey = apiKey;
-      this.model = model;
-      this.baseURL = 'https://api.openai.com/v1/chat/completions';
-    }
-  
-    async calculateRisk(healthData, conversationContext = []) {
-      if (!this.apiKey) {
-        throw new Error('OpenAI API key not configured');
-      }
-  
-      const prompt = this.buildRiskAssessmentPrompt(healthData, conversationContext);
-      
-      try {
-        const response = await fetch(this.baseURL, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: this.model,
-            messages: [
-              {
-                role: 'system',
-                content: this.getSystemPrompt()
-              },
-              {
-                role: 'user',
-                content: prompt
-              }
-            ],
-            temperature: 0.2,
-            max_tokens: 600,
-            response_format: { type: "json_object" }
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error(`API request failed: ${response.statusText}`);
-        }
-  
-        const result = await response.json();
-        return this.parseRiskResponse(result.choices[0].message.content);
-      } catch (error) {
-        console.error('Risk calculation failed:', error);
-        return this.getFallbackRisk();
-      }
-    }
-  
-    getSystemPrompt() {
-      return `You are a medical AI assistant specialized in cancer risk assessment. Your role is to:
-  
-  1. Analyze patient data and provide risk assessment
-  2. Identify key risk factors based on medical literature
-  3. Provide actionable recommendations
-  4. Always include appropriate medical disclaimers
-  
-  IMPORTANT GUIDELINES:
-  - Risk percentages should be based on established medical research
-  - Always recommend consulting healthcare professionals
-  - Be conservative with risk estimates
-  - Focus on modifiable risk factors
-  - Provide educational information
-  
-  Return your response in valid JSON format with these exact fields:
-  {
-    "riskPercentage": number (0-100),
-    "riskLevel": "Low" | "Low-Moderate" | "Moderate" | "Moderate-High" | "High",
-    "keyFactors": ["factor1", "factor2"],
-    "recommendations": ["recommendation1", "recommendation2"],
-    "confidence": "Low" | "Medium" | "High",
-    "disclaimer": "string",
-    "nextQuestions": ["question1", "question2"]
-  }`;
-    }
-  
-    buildRiskAssessmentPrompt(healthData, conversationContext) {
-      const contextSummary = conversationContext.length > 0 
-        ? `Recent conversation: ${conversationContext.slice(-5).map(msg => `${msg.type}: ${msg.text}`).join('\n')}`
-        : 'No previous conversation context.';
-  
-      return `Assess cancer risk based on this patient data:
-  
-  PATIENT INFORMATION:
-  Demographics: ${JSON.stringify(healthData.demographics || {})}
-  Symptoms: ${JSON.stringify(healthData.symptoms || {})}
-  Medical History: ${JSON.stringify(healthData.medicalHistory || {})}
-  Lifestyle Factors: ${JSON.stringify(healthData.lifestyle || {})}
-  Family History: ${JSON.stringify(healthData.familyHistory || {})}
-  
-  CONVERSATION CONTEXT:
-  ${contextSummary}
-  
-  ASSESSMENT REQUIREMENTS:
-  1. Calculate overall cancer risk percentage based on established risk factors
-  2. Identify the most significant risk factors present
-  3. Provide specific, actionable recommendations
-  4. Suggest 2-3 follow-up questions to gather more relevant information
-  5. Include appropriate medical disclaimers
-  
-  Please provide a comprehensive risk assessment in the specified JSON format.`;
-    }
-  
-    parseRiskResponse(response) {
-      try {
-        const parsed = JSON.parse(response);
-        
-        // Validate required fields
-        const required = ['riskPercentage', 'riskLevel', 'keyFactors', 'recommendations', 'confidence'];
-        for (const field of required) {
-          if (!(field in parsed)) {
-            console.warn(`Missing required field: ${field}`);
-          }
-        }
-  
-        // Ensure risk percentage is within bounds
-        if (parsed.riskPercentage > 100) parsed.riskPercentage = 100;
-        if (parsed.riskPercentage < 0) parsed.riskPercentage = 0;
-  
-        return {
-          riskPercentage: parsed.riskPercentage || 0,
-          riskLevel: parsed.riskLevel || 'Unknown',
-          keyFactors: parsed.keyFactors || [],
-          recommendations: parsed.recommendations || [],
-          confidence: parsed.confidence || 'Medium',
-          disclaimer: parsed.disclaimer || 'This assessment is for educational purposes only. Please consult a healthcare professional.',
-          nextQuestions: parsed.nextQuestions || [],
-          timestamp: new Date().toISOString()
-        };
-      } catch (error) {
-        console.error('Failed to parse AI response:', error);
-        return this.getFallbackRisk();
-      }
-    }
-  
-    getFallbackRisk() {
-      return {
-        riskPercentage: 0,
-        riskLevel: 'Unable to Calculate',
-        keyFactors: ['Insufficient data'],
-        recommendations: ['Please consult a healthcare professional for proper assessment'],
-        confidence: 'Low',
-        disclaimer: 'Risk calculation unavailable. Please consult a healthcare professional.',
-        nextQuestions: ['What is your age?', 'Do you have any current symptoms?'],
-        timestamp: new Date().toISOString(),
-        isError: true
-      };
-    }
-  
-    async generateConversationalResponse(conversationHistory) {
-      if (!this.apiKey) {
-        throw new Error('OpenAI API key not configured');
-      }
-  
-      const systemPrompt = this.getConversationalSystemPrompt();
-      const conversationPrompt = this.buildConversationPrompt(conversationHistory);
-  
-      try {
-        const response = await fetch(this.baseURL, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: this.model,
-            messages: [
-              {
-                role: 'system',
-                content: systemPrompt
-              },
-              {
-                role: 'user', 
-                content: conversationPrompt
-              }
-            ],
-            temperature: 0.7,
-            max_tokens: 300,
-            response_format: { type: "json_object" }
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error(`API request failed: ${response.statusText}`);
-        }
-  
-        const result = await response.json();
-        return this.parseConversationalResponse(result.choices[0].message.content);
-      } catch (error) {
-        console.error('Conversational response failed:', error);
-        return this.getFallbackConversationalResponse();
-      }
-    }
-  
-    getConversationalSystemPrompt() {
-      return `You are a caring AI health assistant conducting a cancer risk assessment interview. Your goal is to collect the following REQUIRED information through natural conversation:
-  
-  REQUIRED INFORMATION:
-  1. Age (specific number)
-  2. Sex/Gender (male/female) 
-  3. Height and Weight (for BMI calculation)
-  4. Family history of cancer (any relatives, what type)
-  5. Smoking status and details (never/former/current, frequency, type)
-  6. Alcohol consumption (frequency and amount)
-  
-  CRITICAL RULES:
-  - NEVER repeat questions that have already been asked
-  - ALWAYS acknowledge information the user has already provided
-  - Build on previous answers rather than asking the same thing again
-  - Ask ONE question at a time
-  - Move systematically through missing information only
-  
-  CONVERSATION GUIDELINES:
-  - Be warm, empathetic, and professional
-  - Follow up on answers that need clarification (e.g., if they smoke, ask how often and what type)
-  - Keep responses conversational and friendly
-  - Don't overwhelm with medical jargon
-  - Show that you're listening by acknowledging their responses
-  - Reference what they've already told you to show you're paying attention
-  
-  COMPLETION CRITERIA:
-  Only mark as complete when you have ALL required information with sufficient detail.
-  
-  RESPONSE FORMAT:
-  Return JSON with:
-  {
-    "message": "Your conversational response",
-    "isComplete": boolean (true only when ALL required info collected),
-    "missingInfo": ["list", "of", "missing", "categories"],
-    "needsFollowUp": "category that needs more detail or null"
-  }`;
-    }
-  
-    buildConversationPrompt(conversationHistory) {
-      const conversation = conversationHistory.map(msg => 
-        `${msg.type === 'sent' ? 'User' : 'AI'}: ${msg.text}`
-      ).join('\n');
-  
-      return `Here is the conversation so far:
-  
-  ${conversation}
-  
-  ANALYSIS TASK:
-  1. Carefully review what information the user has ALREADY PROVIDED
-  2. Identify what information is still MISSING
-  3. Check if any previous answers need follow-up clarification
-  4. DO NOT ask questions that have already been answered
-  
-  INFORMATION CHECKLIST - Mark as COLLECTED or MISSING:
-  - Age: Look for specific age number in user responses
-  - Sex/Gender: Look for male/female identification
-  - Height: Look for height measurement
-  - Weight: Look for weight measurement  
-  - Family history: Look for any mention of cancer in family members
-  - Smoking: Look for smoking status (never/former/current) and details
-  - Alcohol: Look for drinking habits and frequency
-  
-  RESPONSE STRATEGY:
-  - If information is MISSING: Ask for it naturally
-  - If information was PROVIDED but needs clarification: Ask follow-up
-  - If ALL information is COLLECTED: Mark as complete
-  - ALWAYS acknowledge what they've already shared before asking for new information
-  
-  Example good response: "Thanks for telling me you're 45 years old. Now, could you share your height and weight so I can calculate your BMI?"
-  
-  Generate your response following these guidelines.`;
-    }
-  
-    parseConversationalResponse(response) {
-      try {
-        const parsed = JSON.parse(response);
-        return {
-          message: parsed.message || "Could you tell me more about that?",
-          isComplete: parsed.isComplete || false,
-          missingInfo: parsed.missingInfo || [],
-          needsFollowUp: parsed.needsFollowUp || null
-        };
-      } catch (error) {
-        console.error('Failed to parse conversational response:', error);
-        return this.getFallbackConversationalResponse();
-      }
-    }
-  
-    getFallbackConversationalResponse() {
-      return {
-        message: "Thank you for that information. To help me provide the best assessment, could you share your age?",
-        isComplete: false,
-        missingInfo: ['age'],
-        needsFollowUp: null
-      };
-    }
+// Enhanced src/services/api/AIRiskEngine.js
+import { singaporeRiskFactors } from '../../data/singaporeRiskFactors.js';
+import { singaporeHealthUtils } from '../../lib/singaporeHealthUtils.js';
 
-  
-    getFinalRiskSystemPrompt() {
-      return `You are a medical AI specialist providing cancer risk assessments. Based on patient information, calculate a comprehensive risk assessment.
-  
-  ASSESSMENT CRITERIA:
-  - Use established medical literature and risk factors
-  - Consider age, sex, family history, lifestyle factors (smoking, alcohol, BMI)
-  - Be conservative and evidence-based
-  - Include both risk factors and protective factors
-  - Provide actionable recommendations
-  
-  RISK CATEGORIES:
-  - 0-15%: Low risk
-  - 16-30%: Low-Moderate risk  
-  - 31-50%: Moderate risk
-  - 51-70%: Moderate-High risk
-  - 71-100%: High risk
-  
-  IMPORTANT:
-  - Always include medical disclaimers
-  - Recommend professional consultation
-  - Be specific about which cancer types the assessment covers
-  - Include protective factors when present
-  
-  Return comprehensive JSON assessment with all fields filled.`;
-    }
-  
-    async calculateFinalRiskFromData(collectedInfo) {
+class AIRiskEngine {
+  constructor() {
+    this.apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    this.baseUrl = 'https://api.openai.com/v1/chat/completions';
+    this.riskFactors = singaporeRiskFactors;
+    this.healthUtils = singaporeHealthUtils;
+  }
+
+  async calculateRisk(healthData, conversationContext = []) {
+    try {
       if (!this.apiKey) {
-        throw new Error('OpenAI API key not configured');
+        console.warn('OpenAI API key not configured, using fallback risk calculation');
+        return this.calculateFallbackRisk(healthData);
       }
-  
-      const systemPrompt = this.getFinalRiskSystemPrompt();
-      const dataPrompt = this.buildDataAnalysisPrompt(collectedInfo);
-  
-      try {
-        const response = await fetch(this.baseURL, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: this.model,
-            messages: [
-              {
-                role: 'system',
-                content: systemPrompt
-              },
-              {
-                role: 'user',
-                content: dataPrompt
-              }
-            ],
-            temperature: 0.2,
-            max_tokens: 800,
-            response_format: { type: "json_object" }
-          })
-        });
-  
-        if (!response.ok) {
-          throw new Error(`API request failed: ${response.statusText}`);
-        }
-  
-        const result = await response.json();
-        return this.parseFinalRiskResponse(result.choices[0].message.content);
-      } catch (error) {
-        console.error('Final risk calculation failed:', error);
-        return this.getFallbackFinalRisk();
-      }
+
+      const prompt = this.buildRiskAssessmentPrompt(healthData, conversationContext);
+      const response = await this.callOpenAI(prompt);
+      const riskAssessment = this.parseRiskResponse(response);
+      
+      // Apply Singapore-specific adjustments
+      return this.applySingaporeAdjustments(riskAssessment, healthData);
+    } catch (error) {
+      console.error('AI risk calculation failed:', error);
+      return this.calculateFallbackRisk(healthData);
     }
-  
-    buildDataAnalysisPrompt(collectedInfo) {
-      // Clean and validate the data to prevent API errors
+  }
+
+  async calculateFinalRiskFromData(collectedInfo) {
+    try {
+      // Enhanced data cleaning with Singapore context
       const cleanData = {
         age: collectedInfo.age || 'Not provided',
         gender: collectedInfo.gender || 'Not provided',
+        ethnicity: collectedInfo.ethnicity || 'Not provided',
         height: collectedInfo.height || 'Not provided',
         weight: collectedInfo.weight || 'Not provided',
         familyHistory: collectedInfo.familyHistory || 'Not provided',
         smokingStatus: collectedInfo.smoking?.status || 'Not provided',
         smokingDetails: collectedInfo.smoking?.details || 'Not provided',
-        alcoholFrequency: collectedInfo.alcohol?.frequency || 'Not provided'
+        alcoholFrequency: collectedInfo.alcohol?.frequency || 'Not provided',
+        occupation: collectedInfo.occupation || 'Not provided',
+        location: collectedInfo.location || 'Singapore'
       };
-  
-      return `Analyze this structured health data and provide a comprehensive cancer risk assessment:
-  
-  PATIENT DATA:
-  Age: ${cleanData.age}
-  Gender: ${cleanData.gender}
-  Height: ${cleanData.height}
-  Weight: ${cleanData.weight}
-  Family History: ${cleanData.familyHistory}
-  Smoking Status: ${cleanData.smokingStatus}
-  Smoking Details: ${cleanData.smokingDetails}
-  Alcohol Frequency: ${cleanData.alcoholFrequency}
-  
-  ANALYSIS REQUIREMENTS:
-  1. Calculate overall cancer risk percentage (0-100%) based on established risk factors
-  2. Identify specific risk factors present in this patient
-  3. Identify any protective factors
-  4. Provide specific, actionable recommendations
-  5. Consider age, gender, BMI, family history, and lifestyle factors
-  6. Include appropriate medical disclaimers
-  
-  You must respond with valid JSON in this exact format:
-  {
-    "riskPercentage": 25,
-    "riskLevel": "Low-Moderate",
-    "confidence": "Medium",
-    "keyFactors": ["Age over 40", "Family history"],
-    "protectiveFactors": ["Non-smoker", "Regular exercise"],
-    "recommendations": ["Regular screening", "Maintain healthy lifestyle"],
-    "additionalInfo": "Based on provided health information",
-    "disclaimer": "This assessment is for educational purposes only",
-    "cancerTypesAssessed": ["general"]
-  }`;
-    }
-  
-    parseFinalRiskResponse(response) {
-      try {
-        const parsed = JSON.parse(response);
-        
-        return {
-          riskPercentage: Math.min(Math.max(parsed.riskPercentage || 0, 0), 100),
-          riskLevel: parsed.riskLevel || 'Moderate',
-          confidence: parsed.confidence || 'Medium',
-          keyFactors: parsed.keyFactors || [],
-          protectiveFactors: parsed.protectiveFactors || [],
-          recommendations: parsed.recommendations || [],
-          additionalInfo: parsed.additionalInfo || '',
-          disclaimer: parsed.disclaimer || 'This assessment is for educational purposes only. Please consult a healthcare professional for proper medical evaluation.',
-          cancerTypesAssessed: parsed.cancerTypesAssessed || ['general'],
-          timestamp: new Date().toISOString()
-        };
-      } catch (error) {
-        console.error('Failed to parse final risk response:', error);
-        return this.getFallbackFinalRisk();
+
+      const prompt = this.buildSingaporeSpecificPrompt(cleanData);
+      
+      if (!this.apiKey) {
+        return this.calculateDetailedFallbackRisk(cleanData);
       }
-    }
-  
-    getFallbackFinalRisk() {
-      return {
-        riskPercentage: 25,
-        riskLevel: 'Moderate',
-        confidence: 'Low',
-        keyFactors: ['Assessment incomplete'],
-        protectiveFactors: [],
-        recommendations: ['Consult with a healthcare professional for proper assessment'],
-        additionalInfo: 'Risk calculation was incomplete due to technical issues.',
-        disclaimer: 'This assessment could not be completed. Please consult a healthcare professional.',
-        cancerTypesAssessed: ['general'],
-        timestamp: new Date().toISOString(),
-        isError: true
-      };
+
+      const response = await this.callOpenAI(prompt);
+      return this.parseFinalRiskResponse(response);
+    } catch (error) {
+      console.error('Final risk calculation failed:', error);
+      return this.getErrorResponse();
     }
   }
-  
-  export default AIRiskEngine;
+
+  buildSingaporeSpecificPrompt(cleanData) {
+    return `Analyze this health data for cancer risk assessment in Singapore context:
+
+PATIENT DATA:
+Age: ${cleanData.age}
+Gender: ${cleanData.gender}
+Ethnicity: ${cleanData.ethnicity}
+Height: ${cleanData.height} cm
+Weight: ${cleanData.weight} kg
+Family History: ${cleanData.familyHistory}
+Smoking Status: ${cleanData.smokingStatus}
+Smoking Details: ${cleanData.smokingDetails}
+Alcohol Frequency: ${cleanData.alcoholFrequency}
+Occupation: ${cleanData.occupation}
+Location: ${cleanData.location}
+
+SINGAPORE CONTEXT:
+- Consider ethnicity-specific risk variations (Chinese: higher colorectal, liver; Malay: higher cervical; Indian: variations in breast cancer)
+- Singapore cancer statistics: 1 in 4 lifetime risk, colorectal most common (16.2%), breast (14.8%)
+- Environmental factors: urban living, air quality, high-stress work culture
+- Local diet patterns: hawker food, high sodium, processed foods
+- Healthcare access: excellent screening programs, polyclinics, subsidized care
+
+ANALYSIS REQUIREMENTS:
+1. Calculate overall cancer risk percentage (0-100%) using Singapore population data
+2. Identify ethnicity-specific risk factors
+3. Consider Singapore lifestyle factors (hawker diet, work stress, urban environment)
+4. Provide culturally appropriate recommendations
+5. Reference Singapore health resources (polyclinics, MOH guidelines)
+6. Include screening recommendations per Singapore guidelines
+
+Respond with valid JSON in this format:
+{
+  "riskPercentage": 25,
+  "riskLevel": "Low-Moderate",
+  "confidence": "Medium",
+  "keyFactors": ["Age over 40", "Ethnicity-specific factors"],
+  "protectiveFactors": ["Non-smoker", "Regular exercise"],
+  "recommendations": ["Regular screening at polyclinics", "Improve hawker food choices"],
+  "singaporeSpecific": {
+    "ethnicityRisk": "Moderate adjustment for Chinese ethnicity",
+    "screeningGuidelines": "Follow MOH cervical screening every 5 years",
+    "localResources": ["Nearest polyclinic", "HPB programs"]
+  },
+  "additionalInfo": "Based on Singapore population health data",
+  "disclaimer": "For educational purposes only. Consult healthcare professionals.",
+  "cancerTypesAssessed": ["colorectal", "breast", "cervical"]
+}`;
+  }
+
+  applySingaporeAdjustments(riskAssessment, healthData) {
+    // Apply ethnicity-based risk adjustments
+    if (healthData.ethnicity && healthData.age) {
+      const ethnicAdjustment = this.calculateEthnicRiskAdjustment(
+        healthData.ethnicity, 
+        riskAssessment.cancerTypesAssessed || ['general']
+      );
+      
+      riskAssessment.riskPercentage = Math.min(100, 
+        Math.max(0, riskAssessment.riskPercentage * ethnicAdjustment)
+      );
+      
+      if (ethnicAdjustment !== 1.0) {
+        riskAssessment.keyFactors = riskAssessment.keyFactors || [];
+        riskAssessment.keyFactors.push(`Ethnicity-based risk adjustment (${ethnicAdjustment}x)`);
+      }
+    }
+
+    // Add Singapore-specific recommendations
+    riskAssessment.recommendations = [
+      ...riskAssessment.recommendations || [],
+      ...this.getSingaporeSpecificRecommendations(healthData)
+    ];
+
+    return riskAssessment;
+  }
+
+  calculateEthnicRiskAdjustment(ethnicity, cancerTypes) {
+    const ethnicityLower = ethnicity.toLowerCase();
+    const adjustments = this.riskFactors.ethnicity[ethnicityLower];
+    
+    if (!adjustments) return 1.0;
+
+    // Calculate weighted average adjustment across cancer types
+    let totalAdjustment = 0;
+    let count = 0;
+
+    cancerTypes.forEach(cancerType => {
+      if (adjustments[cancerType]) {
+        totalAdjustment += adjustments[cancerType].riskMultiplier;
+        count++;
+      }
+    });
+
+    return count > 0 ? totalAdjustment / count : 1.0;
+  }
+
+  getSingaporeSpecificRecommendations(healthData) {
+    const recommendations = [];
+
+    // Screening recommendations based on age and gender
+    if (healthData.gender === 'female' && parseInt(healthData.age) >= 25) {
+      recommendations.push('Schedule cervical cancer screening at polyclinic');
+    }
+    
+    if (parseInt(healthData.age) >= 50) {
+      recommendations.push('Annual FIT test for colorectal cancer screening');
+    }
+
+    // Lifestyle recommendations for Singapore context
+    recommendations.push('Choose healthier options at hawker centers');
+    recommendations.push('Use ActiveSG facilities for regular exercise');
+    
+    if (healthData.smoking?.status === 'current') {
+      recommendations.push('Join HPB I Quit Programme for smoking cessation');
+    }
+
+    return recommendations;
+  }
+
+  calculateDetailedFallbackRisk(cleanData) {
+    let riskScore = 20; // Base risk for Singapore population
+
+    // Age adjustment
+    const age = parseInt(cleanData.age);
+    if (age > 50) riskScore += 15;
+    else if (age > 40) riskScore += 10;
+    else if (age > 30) riskScore += 5;
+
+    // Lifestyle factors
+    if (cleanData.smokingStatus === 'current') riskScore += 25;
+    if (cleanData.alcoholFrequency === 'daily') riskScore += 10;
+
+    // BMI calculation if height and weight provided
+    const height = parseFloat(cleanData.height);
+    const weight = parseFloat(cleanData.weight);
+    if (height && weight) {
+      const bmi = this.healthUtils.calculateBMI(height, weight);
+      if (bmi > 27.5) riskScore += 12;
+      else if (bmi > 23) riskScore += 6;
+    }
+
+    // Ethnicity adjustment
+    if (cleanData.ethnicity) {
+      const adjustment = this.calculateEthnicRiskAdjustment(cleanData.ethnicity, ['colorectal', 'breast']);
+      riskScore *= adjustment;
+    }
+
+    return {
+      riskPercentage: Math.min(100, Math.max(0, Math.round(riskScore))),
+      riskLevel: riskScore < 25 ? 'Low' : riskScore < 50 ? 'Moderate' : 'High',
+      confidence: 'Medium',
+      keyFactors: this.identifyKeyFactors(cleanData),
+      protectiveFactors: this.identifyProtectiveFactors(cleanData),
+      recommendations: this.generateFallbackRecommendations(cleanData),
+      singaporeSpecific: {
+        ethnicityRisk: cleanData.ethnicity ? `Adjusted for ${cleanData.ethnicity} ethnicity` : 'No ethnicity data',
+        screeningGuidelines: this.getScreeningGuidelines(cleanData),
+        localResources: ['Visit nearest polyclinic', 'Contact HPB health hotline 1800-567-2020']
+      },
+      disclaimer: 'This is a simplified assessment. Please consult healthcare professionals for accurate evaluation.',
+      isError: false
+    };
+  }
+
+  identifyKeyFactors(data) {
+    const factors = [];
+    
+    if (parseInt(data.age) > 40) factors.push('Age over 40');
+    if (data.smokingStatus === 'current') factors.push('Current smoker');
+    if (data.familyHistory?.includes('yes')) factors.push('Family history of cancer');
+    if (data.alcoholFrequency === 'daily') factors.push('Daily alcohol consumption');
+    
+    const height = parseFloat(data.height);
+    const weight = parseFloat(data.weight);
+    if (height && weight) {
+      const bmi = this.healthUtils.calculateBMI(height, weight);
+      if (bmi > 27.5) factors.push('Obesity (BMI > 27.5)');
+    }
+
+    return factors;
+  }
+
+  identifyProtectiveFactors(data) {
+    const factors = [];
+    
+    if (data.smokingStatus === 'never') factors.push('Non-smoker');
+    if (data.alcoholFrequency === 'never' || data.alcoholFrequency === 'rarely') {
+      factors.push('Low alcohol consumption');
+    }
+    
+    const height = parseFloat(data.height);
+    const weight = parseFloat(data.weight);
+    if (height && weight) {
+      const bmi = this.healthUtils.calculateBMI(height, weight);
+      if (bmi >= 18.5 && bmi < 23) factors.push('Healthy BMI');
+    }
+
+    return factors;
+  }
+
+  generateFallbackRecommendations(data) {
+    const recommendations = [];
+    
+    // Universal recommendations
+    recommendations.push('Maintain regular physical activity');
+    recommendations.push('Follow a balanced diet rich in fruits and vegetables');
+    recommendations.push('Avoid processed and red meat');
+    
+    // Specific recommendations based on data
+    if (data.smokingStatus === 'current') {
+      recommendations.push('Quit smoking - call HPB I Quit Programme 1800-438-2000');
+    }
+    
+    if (data.alcoholFrequency === 'daily') {
+      recommendations.push('Reduce alcohol consumption');
+    }
+
+    // Singapore-specific
+    recommendations.push('Choose healthier options at hawker centers');
+    recommendations.push('Use park connectors for walking/jogging');
+    
+    // Screening based on age/gender
+    const age = parseInt(data.age);
+    if (data.gender === 'female' && age >= 25) {
+      recommendations.push('Schedule cervical cancer screening');
+    }
+    if (age >= 50) {
+      recommendations.push('Get annual colorectal cancer screening');
+    }
+    if (data.gender === 'female' && age >= 40) {
+      recommendations.push('Schedule regular breast cancer screening');
+    }
+
+    return recommendations;
+  }
+
+  getScreeningGuidelines(data) {
+    const age = parseInt(data.age);
+    const gender = data.gender;
+    const guidelines = [];
+
+    if (gender === 'female' && age >= 25) {
+      if (age < 30) {
+        guidelines.push('Pap test every 3 years');
+      } else {
+        guidelines.push('HPV test every 5 years');
+      }
+    }
+
+    if (age >= 50) {
+      guidelines.push('Annual FIT test for colorectal cancer');
+    }
+
+    if (gender === 'female' && age >= 40) {
+      guidelines.push('Mammogram every 2 years');
+    }
+
+    return guidelines.join(', ') || 'Consult healthcare provider for appropriate screening';
+  }
+
+  async generateFollowUpMessage(riskAssessment, userData) {
+    if (!riskAssessment || riskAssessment.isError) {
+      return "I'd like to gather more information to provide you with a better assessment. Could you tell me about your family history of cancer?";
+    }
+
+    const messages = [
+      `Based on your information, your cancer risk is ${riskAssessment.riskLevel.toLowerCase()}. `,
+      `Here's what I recommend focusing on: ${riskAssessment.recommendations.slice(0, 2).join(' and ')}.`,
+      ` Would you like me to explain any of these recommendations in more detail?`
+    ];
+
+    return messages.join('');
+  }
+
+  parseFinalRiskResponse(response) {
+    try {
+      const parsed = JSON.parse(response);
+      
+      return {
+        riskPercentage: Math.min(Math.max(parsed.riskPercentage || 0, 0), 100),
+        riskLevel: parsed.riskLevel || 'Moderate',
+        confidence: parsed.confidence || 'Medium',
+        keyFactors: parsed.keyFactors || [],
+        protectiveFactors: parsed.protectiveFactors || [],
+        recommendations: parsed.recommendations || [],
+        singaporeSpecific: parsed.singaporeSpecific || {},
+        additionalInfo: parsed.additionalInfo || '',
+        disclaimer: parsed.disclaimer || 'This assessment is for educational purposes only. Please consult a healthcare professional for proper medical evaluation.',
+        cancerTypesAssessed: parsed.cancerTypesAssessed || ['general'],
+        isError: false,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Failed to parse AI response:', error);
+      return this.getErrorResponse();
+    }
+  }
+
+  getErrorResponse() {
+    return {
+      isError: true,
+      message: "Unable to calculate risk assessment at this time. Please try again later or consult a healthcare professional.",
+      riskPercentage: 0,
+      riskLevel: 'Unable to Calculate',
+      confidence: 'Low',
+      keyFactors: [],
+      protectiveFactors: [],
+      recommendations: ['Consult a healthcare professional for proper assessment'],
+      disclaimer: 'Technical error occurred. Please seek professional medical advice.'
+    };
+  }
+
+  async callOpenAI(prompt) {
+    const response = await fetch(this.baseUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a health assessment AI specialized in cancer risk evaluation for Singapore residents. Provide accurate, culturally sensitive health information.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.7
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  }
+}
+
+export default AIRiskEngine;
