@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage'
 import CommunityPage from './pages/CommunityPage'  
 import PreventionPage from './pages/PreventionPage'  
 import AnalyticsPage from './pages/AnalyticsPage'
+import ScreeningSchedulerPage from './pages/ScreeningSchedulerPage'  // ADD THIS
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/prevention" element={<PreventionPage />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/scheduler" element={<ScreeningSchedulerPage />} />  {/* ADD THIS */}
         <Route path="*" element={<ErrorPage />} />
 
       </Routes>

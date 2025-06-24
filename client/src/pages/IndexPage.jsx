@@ -1,4 +1,4 @@
-// src/pages/IndexPage.jsx - Implementation Ready
+// src/pages/IndexPage.jsx - Updated with proper scheduler navigation
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import Border from '../components/phoneComponents/Border';
@@ -63,7 +63,7 @@ const IndexPage = () => {
         navigate('/analytics');
         break;
       case '/scheduler':
-        setCurrentView('list'); // Show quiz list for now
+        navigate('/scheduler');  // FIXED: Navigate to scheduler page
         break;
       case '/settings':
         setCurrentView('settings');
@@ -89,7 +89,7 @@ const IndexPage = () => {
   };
 
   // Check if OpenAI API key is configured
-  const isAIConfigured = !!import.meta.env.VITE_OPENAI_API_KEY;
+  const isAIConfigured = !import.meta.env.VITE_OPENAI_API_KEY;
 
   // Render OS Interface (no phone border)
   if (currentView === 'os') {
