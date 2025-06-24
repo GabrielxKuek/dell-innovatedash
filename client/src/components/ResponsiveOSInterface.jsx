@@ -1,4 +1,6 @@
+// src/components/ResponsiveOSInterface.jsx - CSS CLICK ISSUES FIXED
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Brain, BarChart3, Users, Heart, Calendar, Settings, 
   Wifi, Battery, Volume2, Grid3X3, ChevronRight,
@@ -6,11 +8,11 @@ import {
 } from 'lucide-react';
 
 const ResponsiveOSInterface = ({ onAppSelect }) => {
+  const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    // Check if mobile device
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -18,7 +20,6 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
-    // Update time every minute
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     
     return () => {
@@ -27,7 +28,6 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
     };
   }, []);
 
-  // Featured apps (highlighted first)
   const featuredApps = [
     {
       id: 'ai-assessment',
@@ -53,7 +53,6 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
     }
   ];
 
-  // Regular apps
   const regularApps = [
     {
       id: 'dashboard',
@@ -105,23 +104,79 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
     }
   ];
 
-  const handleAppClick = (app) => {
-    if (onAppSelect) {
+  // Enhanced click handler with event debugging
+  const handleAppClick = (app, event) => {
+    // Prevent event bubbling and ensure we capture the click
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    console.log('=== CLICK DEBUG INFO ===');
+    console.log('App clicked:', app.name, 'Route:', app.route);
+    console.log('Event target:', event?.target);
+    console.log('Current target:', event?.currentTarget);
+    console.log('onAppSelect available:', typeof onAppSelect === 'function');
+    console.log('navigate available:', typeof navigate === 'function');
+    console.log('Window width:', window.innerWidth, 'isMobile:', isMobile);
+    console.log('========================');
+
+    // Handle special routes through parent
+    if (onAppSelect && (app.route === '/ai-quiz' || app.route === '/quick-quiz' || app.route === '/scheduler' || app.route === '/settings')) {
+      console.log('Using parent onAppSelect handler');
       onAppSelect(app);
+      return;
+    }
+
+    // Handle navigation routes directly
+    try {
+      switch (app.route) {
+        case '/dashboard':
+          console.log('Navigating to dashboard...');
+          navigate('/dashboard');
+          break;
+        case '/prevention':
+          console.log('Navigating to prevention...');
+          navigate('/prevention');
+          break;
+        case '/community':
+          console.log('Navigating to community...');
+          navigate('/community');
+          break;
+        case '/analytics':
+          console.log('Navigating to analytics...');
+          navigate('/analytics');
+          break;
+        default:
+          console.log('Unknown route, falling back to onAppSelect or home');
+          if (onAppSelect) {
+            onAppSelect(app);
+          } else {
+            navigate('/');
+          }
+      }
+    } catch (error) {
+      console.error('Navigation failed:', error);
+      // Fallback
+      if (app.route === '/ai-quiz' || app.route === '/quick-quiz' || app.route === '/scheduler' || app.route === '/settings') {
+        window.location.href = '/';
+      } else {
+        window.location.href = app.route;
+      }
     }
   };
 
   const DesktopInterface = () => (
     <div className="h-screen w-full bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
+      {/* Background Pattern - FIXED: Make sure it doesn't block clicks */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}></div>
       </div>
 
       {/* Desktop Taskbar */}
-      <div className="absolute top-0 left-0 right-0 h-8 bg-black bg-opacity-30 backdrop-blur-md border-b border-white border-opacity-20 flex items-center justify-between px-4 text-white text-sm">
+      <div className="absolute top-0 left-0 right-0 h-8 bg-black bg-opacity-30 backdrop-blur-md border-b border-white border-opacity-20 flex items-center justify-between px-4 text-white text-sm z-50">
         <div className="flex items-center gap-4">
           <div className="font-semibold">Singapore Health OS</div>
           <div>{currentTime.toLocaleDateString('en-SG')}</div>
@@ -134,51 +189,62 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="pt-8 p-8 h-full">
-        <div className="max-w-7xl mx-auto h-full">
+      {/* Main Content - FIXED: Ensure proper z-index and click handling */}
+      <div className="pt-8 p-8 h-full relative z-10">
+        <div className="max-w-7xl mx-auto h-full flex flex-col">
           {/* Welcome Section */}
-          <div className="text-center text-white mb-12 mt-8">
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-              Singapore Health Platform
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+              Singapore Health OS
             </h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Your AI-powered health companion for cancer prevention and early detection
+            <p className="text-xl text-blue-200 mb-8">
+              Your Comprehensive Health Management Platform
             </p>
           </div>
 
-          {/* Featured Apps */}
+          {/* Featured Apps - FIXED: Enhanced click handling */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Star className="w-6 h-6 text-yellow-400" />
-              Featured Health Apps
+              <Star className="w-6 h-6" />
+              Featured Health Tools
             </h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {featuredApps.map((app) => {
                 const Icon = app.icon;
                 return (
                   <div
                     key={app.id}
-                    onClick={() => handleAppClick(app)}
-                    className="group relative bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-8 border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300 cursor-pointer hover:scale-105"
+                    onClick={(e) => handleAppClick(app, e)}
+                    onMouseDown={(e) => {
+                      console.log('Mouse down on:', app.name);
+                      e.preventDefault();
+                    }}
+                    className="group bg-white bg-opacity-10 backdrop-blur-md rounded-3xl p-8 hover:bg-opacity-20 transition-all duration-300 cursor-pointer border border-white border-opacity-20 relative z-20"
+                    style={{ 
+                      pointerEvents: 'auto',
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none',
+                      MozUserSelect: 'none',
+                      msUserSelect: 'none'
+                    }}
                   >
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-medium">
-                        {app.badge}
-                      </span>
-                    </div>
-                    
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      <Icon className="w-8 h-8 text-white" />
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-2">{app.name}</h3>
-                    <p className="text-blue-200 text-sm mb-3">{app.subtitle}</p>
-                    <p className="text-blue-100 text-sm">{app.description}</p>
-                    
-                    <div className="flex items-center justify-between mt-6">
-                      <span className="text-blue-200 text-sm">Click to start</span>
-                      <ChevronRight className="w-5 h-5 text-blue-200 group-hover:translate-x-1 transition-transform" />
+                    <div className="flex items-center gap-6 pointer-events-none">
+                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <Icon className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-white mb-2">{app.name}</h3>
+                        <p className="text-blue-200 text-sm mb-4">{app.description}</p>
+                        {app.badge && (
+                          <span className="inline-block bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full font-medium">
+                            {app.badge}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-blue-200 group-hover:text-white transition-colors">
+                        <span className="text-blue-200 text-sm">Click to start</span>
+                        <ChevronRight className="w-5 h-5 text-blue-200 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </div>
                   </div>
                 );
@@ -186,7 +252,7 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
             </div>
           </div>
 
-          {/* Regular Apps */}
+          {/* Regular Apps - FIXED: Enhanced click handling */}
           <div>
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
               <Grid3X3 className="w-6 h-6" />
@@ -198,14 +264,25 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
                 return (
                   <div
                     key={app.id}
-                    onClick={() => handleAppClick(app)}
-                    className="group text-center cursor-pointer"
+                    onClick={(e) => handleAppClick(app, e)}
+                    onMouseDown={(e) => {
+                      console.log('Mouse down on:', app.name);
+                      e.preventDefault();
+                    }}
+                    className="group text-center cursor-pointer relative z-20"
+                    style={{ 
+                      pointerEvents: 'auto',
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none',
+                      MozUserSelect: 'none',
+                      msUserSelect: 'none'
+                    }}
                   >
-                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
+                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-xl pointer-events-none`}>
                       <Icon className="w-10 h-10 text-white" />
                     </div>
-                    <h3 className="text-white font-medium text-sm mb-1">{app.name}</h3>
-                    <p className="text-blue-200 text-xs">{app.description}</p>
+                    <h3 className="text-white font-medium text-sm mb-1 pointer-events-none">{app.name}</h3>
+                    <p className="text-blue-200 text-xs pointer-events-none">{app.description}</p>
                   </div>
                 );
               })}
@@ -226,7 +303,7 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
           </div>
           <span>Health OS</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Wifi className="w-4 h-4" />
           <Battery className="w-4 h-4" />
           <span>{currentTime.toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -235,41 +312,32 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
 
       {/* Mobile Content */}
       <div className="p-6 pb-24">
-        {/* Time and Greeting */}
-        <div className="text-center text-white mb-8">
-          <div className="text-4xl font-light mb-2">
-            {currentTime.toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit' })}
-          </div>
-          <div className="text-lg text-blue-200">
-            {currentTime.toLocaleDateString('en-SG', { weekday: 'long', month: 'long', day: 'numeric' })}
-          </div>
+        {/* Welcome Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Health OS</h1>
+          <p className="text-blue-200">Your health companion</p>
         </div>
 
         {/* Featured Apps - Mobile */}
         <div className="mb-8">
-          <h2 className="text-white text-lg font-semibold mb-4 flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-400" />
-            Featured
-          </h2>
+          <h2 className="text-white text-lg font-semibold mb-4">Featured</h2>
           <div className="space-y-4">
             {featuredApps.map((app) => {
               const Icon = app.icon;
               return (
                 <div
                   key={app.id}
-                  onClick={() => handleAppClick(app)}
-                  className="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-4 border border-white border-opacity-20 active:bg-opacity-20 transition-all"
+                  onClick={(e) => handleAppClick(app, e)}
+                  className="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-4 active:scale-95 transition-transform cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 pointer-events-none">
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${app.color} flex items-center justify-center`}>
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-white font-medium">{app.name}</h3>
-                      <p className="text-blue-200 text-sm">{app.subtitle}</p>
-                    </div>
-                    <div className="bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-medium">
-                      {app.badge}
+                      <p className="text-blue-200 text-sm">{app.description}</p>
                     </div>
                   </div>
                 </div>
@@ -287,13 +355,14 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
               return (
                 <div
                   key={app.id}
-                  onClick={() => handleAppClick(app)}
-                  className="text-center active:scale-95 transition-transform"
+                  onClick={(e) => handleAppClick(app, e)}
+                  className="text-center active:scale-95 transition-transform cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
                 >
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center mb-2 mx-auto shadow-lg`}>
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center mb-2 mx-auto shadow-lg pointer-events-none`}>
                     <Icon className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-white text-xs font-medium leading-tight">{app.name}</h3>
+                  <h3 className="text-white text-xs font-medium leading-tight pointer-events-none">{app.name}</h3>
                 </div>
               );
             })}
@@ -310,18 +379,20 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
               return (
                 <div
                   key={app.id}
-                  onClick={() => handleAppClick(app)}
-                  className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center shadow-lg active:scale-95 transition-transform`}
+                  onClick={(e) => handleAppClick(app, e)}
+                  className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${app.color} flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer`}
+                  style={{ pointerEvents: 'auto' }}
                 >
-                  <Icon className="w-7 h-7 text-white" />
+                  <Icon className="w-7 h-7 text-white pointer-events-none" />
                 </div>
               );
             })}
             <div
-              onClick={() => handleAppClick(regularApps[0])} // Dashboard
-              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+              onClick={(e) => handleAppClick(regularApps[0], e)}
+              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer"
+              style={{ pointerEvents: 'auto' }}
             >
-              <BarChart3 className="w-7 h-7 text-white" />
+              <BarChart3 className="w-7 h-7 text-white pointer-events-none" />
             </div>
           </div>
         </div>
