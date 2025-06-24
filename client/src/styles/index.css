@@ -1,3 +1,4 @@
+/* src/styles/index.css - UPDATED FOR TAILWIND V4 WITH WHITESPACE FIXES */
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
@@ -17,6 +18,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* FIXED: Prevent horizontal overflow */
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+  
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -61,12 +68,25 @@ a:hover {
   color: #535bf2;
 }
 
+/* FIXED: Body styling with overflow prevention */
 body {
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  /* FIXED: Prevent horizontal overflow */
+  overflow-x: hidden;
+  width: 100%;
+  /* Better touch scrolling on mobile */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* FIXED: Root element styling */
+#root {
+  overflow-x: hidden;
+  min-height: 100vh;
+  width: 100%;
 }
 
 h1 {
@@ -84,6 +104,9 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  /* FIXED: Better touch targets */
+  min-height: 44px;
+  min-width: 44px;
 }
 button:hover {
   border-color: #646cff;
@@ -184,13 +207,596 @@ button:focus-visible {
   --color-pink-secondary: oklch(0.689 0.205 356.3);    /* Rose-500 equivalent */
   --color-pink-accent: oklch(0.977 0.024 340.7);       /* Pink-50 equivalent */
   --color-pink-muted: oklch(0.933 0.048 340.7);        /* Pink-100 equivalent */
+  
+  /* FIXED: Health app specific colors */
+  --color-health-primary: oklch(0.646 0.222 41.116);   /* Orange for energy */
+  --color-health-secondary: oklch(0.6 0.118 184.704);  /* Teal for calm */
+  --color-health-success: oklch(0.769 0.188 70.08);    /* Green for success */
+  --color-health-warning: oklch(0.828 0.189 84.429);   /* Yellow for warning */
+  --color-health-danger: oklch(0.577 0.245 27.325);    /* Red for danger */
+  
+  /* FIXED: Singapore theme colors */
+  --color-sg-red: oklch(0.577 0.245 27.325);           /* Singapore red */
+  --color-sg-white: oklch(0.985 0 0);                  /* Singapore white */
+  
+  /* FIXED: Safe area and spacing variables */
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-left: env(safe-area-inset-left);
+  --safe-area-right: env(safe-area-inset-right);
+  
+  /* FIXED: Container max-widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* FIXED: Prevent all elements from causing overflow */
+    box-sizing: border-box;
   }
+  
+  html {
+    /* FIXED: Prevent horizontal scroll and improve performance */
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    height: 100%;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    /* FIXED: Reset body for better responsive behavior */
+    display: block;
+    place-items: unset;
+    overflow-x: hidden;
+    min-height: 100vh;
+    width: 100%;
   }
+  
+  #root {
+    overflow-x: hidden;
+    min-height: 100vh;
+    width: 100%;
+  }
+  
+  /* FIXED: Better default styling for media elements */
+  img, 
+  picture, 
+  video, 
+  canvas, 
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* FIXED: Better button defaults */
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+  }
+  
+  /* FIXED: Better focus styles */
+  :focus {
+    outline: 2px solid oklch(var(--color-ring));
+    outline-offset: 2px;
+  }
+  
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  
+  /* FIXED: Prevent inputs from zooming on iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@layer components {
+  /* FIXED: Container utilities for consistent layouts */
+  .container-fluid {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: hidden;
+  }
+  
+  .container-constrained {
+    width: 100%;
+    max-width: var(--container-xl);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: hidden;
+  }
+  
+  .container-narrow {
+    width: 100%;
+    max-width: var(--container-md);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: hidden;
+  }
+  
+  /* FIXED: Responsive grid systems */
+  .responsive-grid {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .responsive-grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .responsive-grid-cards {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  .responsive-grid-apps {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+  
+  /* FIXED: Health app specific components */
+  .health-card {
+    @apply bg-card text-card-foreground shadow-sm border rounded-lg p-6;
+    overflow: hidden;
+    width: 100%;
+  }
+  
+  .metric-card {
+    @apply text-center p-4 rounded-lg;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .app-icon {
+    @apply flex items-center justify-center rounded-2xl shadow-lg;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  
+  .app-icon:hover {
+    transform: scale(1.05);
+  }
+  
+  /* FIXED: Button components */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+    @apply transition-colors;
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+    min-width: 44px;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  
+  .btn-outline {
+    @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  }
+  
+  /* FIXED: Navigation components */
+  .nav-mobile {
+    @apply fixed bottom-0 left-0 right-0 bg-background border-t border-border;
+    padding-bottom: var(--safe-area-bottom);
+    z-index: 50;
+  }
+  
+  .nav-desktop {
+    @apply bg-background shadow-sm border-b border-border;
+  }
+  
+  /* FIXED: Glass morphism effects */
+  .glass-effect {
+    background: oklch(from var(--color-background) l c h / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid oklch(from var(--color-border) l c h / 0.2);
+  }
+  
+  /* FIXED: Phone border component */
+  .phone-border {
+    position: relative;
+    background: oklch(0.1 0 0);
+    border-radius: 2rem;
+    padding: 0.5rem;
+    box-shadow: 0 25px 50px -12px oklch(0 0 0 / 0.25);
+    width: 100%;
+    max-width: 24rem;
+    margin: 0 auto;
+    flex-shrink: 0;
+  }
+  
+  @media (min-width: 768px) {
+    .phone-border {
+      border-radius: 3rem;
+      padding: 0.75rem;
+    }
+  }
+  
+  .phone-screen {
+    position: relative;
+    background: oklch(0 0 0);
+    border-radius: 1.5rem;
+    overflow: hidden;
+  }
+  
+  @media (min-width: 768px) {
+    .phone-screen {
+      border-radius: 2.5rem;
+    }
+  }
+  
+  .phone-content {
+    position: relative;
+    background: oklch(var(--color-background));
+    width: 100%;
+    aspect-ratio: 9/16;
+    min-height: 500px;
+    max-height: 640px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  /* FIXED: Overflow utilities */
+  .overflow-x-hidden {
+    overflow-x: hidden;
+  }
+  
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+  
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  
+  /* FIXED: Safe area utilities */
+  .safe-area-top {
+    padding-top: var(--safe-area-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: var(--safe-area-bottom);
+  }
+  
+  .safe-area-left {
+    padding-left: var(--safe-area-left);
+  }
+  
+  .safe-area-right {
+    padding-right: var(--safe-area-right);
+  }
+  
+  .pb-safe {
+    padding-bottom: var(--safe-area-bottom);
+  }
+  
+  .px-safe {
+    padding-left: var(--safe-area-left);
+    padding-right: var(--safe-area-right);
+  }
+  
+  .py-safe {
+    padding-top: var(--safe-area-top);
+    padding-bottom: var(--safe-area-bottom);
+  }
+  
+  /* FIXED: Viewport utilities */
+  .min-h-screen-safe {
+    min-height: calc(100vh - var(--safe-area-top) - var(--safe-area-bottom));
+  }
+  
+  .h-screen-safe {
+    height: calc(100vh - var(--safe-area-top) - var(--safe-area-bottom));
+  }
+  
+  /* FIXED: Responsive text utilities */
+  .text-responsive {
+    font-size: clamp(0.875rem, 2.5vw, 1.125rem);
+  }
+  
+  .text-responsive-lg {
+    font-size: clamp(1.125rem, 3vw, 1.5rem);
+  }
+  
+  .text-responsive-xl {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+  }
+  
+  .text-responsive-2xl {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+  
+  /* FIXED: Aspect ratio utilities */
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+  
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+  
+  .aspect-phone {
+    aspect-ratio: 9 / 16;
+  }
+  
+  .aspect-card {
+    aspect-ratio: 4 / 3;
+  }
+  
+  /* FIXED: Layout utilities */
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .flex-start {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .flex-end {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  
+  /* FIXED: Touch target utilities */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* FIXED: Health gradient utilities */
+  .gradient-health {
+    background: linear-gradient(135deg, oklch(var(--color-health-primary)), oklch(var(--color-health-secondary)));
+  }
+  
+  .gradient-success {
+    background: linear-gradient(135deg, oklch(var(--color-health-success)), oklch(var(--color-chart-2)));
+  }
+  
+  .gradient-warning {
+    background: linear-gradient(135deg, oklch(var(--color-health-warning)), oklch(var(--color-health-primary)));
+  }
+  
+  .gradient-danger {
+    background: linear-gradient(135deg, oklch(var(--color-health-danger)), oklch(var(--color-destructive)));
+  }
+  
+  .gradient-pink {
+    background: linear-gradient(135deg, oklch(var(--color-pink-primary)), oklch(var(--color-pink-secondary)));
+  }
+  
+  /* FIXED: Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+}
+
+/* FIXED: Keyframe animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* FIXED: Mobile-specific improvements */
+@media (max-width: 768px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .responsive-grid-apps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  
+  .responsive-grid-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Better touch targets on mobile */
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* FIXED: Tablet responsiveness */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-grid-apps {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .responsive-grid-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* FIXED: Desktop improvements */
+@media (min-width: 1025px) {
+  .responsive-grid-apps {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .responsive-grid-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Better hover effects on desktop */
+  .hover\:scale-105:hover {
+    transform: scale(1.05);
+  }
+  
+  .hover\:shadow-lg:hover {
+    box-shadow: 0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -2px oklch(0 0 0 / 0.05);
+  }
+}
+
+/* FIXED: Large screen optimizations */
+@media (min-width: 1440px) {
+  .container-constrained {
+    max-width: 1400px;
+  }
+  
+  .responsive-grid-apps {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .responsive-grid-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* FIXED: Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-friendly {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .nav-mobile,
+  .nav-desktop {
+    display: none !important;
+  }
+  
+  .health-card {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}
+
+/* FIXED: Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-scale-in {
+    animation: none !important;
+  }
+}
+
+/* FIXED: High contrast mode */
+@media (prefers-contrast: high) {
+  .glass-effect {
+    background: oklch(var(--color-background)) !important;
+    border: 2px solid oklch(var(--color-foreground)) !important;
+  }
+}
+
+/* FIXED: Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(from var(--color-muted-foreground) l c h / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(from var(--color-muted-foreground) l c h / 0.5);
+}
+
+/* FIXED: Selection styles */
+::selection {
+  background-color: oklch(from var(--color-primary) l c h / 0.3);
+  color: inherit;
 }

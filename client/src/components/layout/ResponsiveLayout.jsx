@@ -1,4 +1,4 @@
-// src/components/layout/ResponsiveLayout.jsx
+// src/components/layout/ResponsiveLayout.jsx - FIXED WHITESPACE ISSUE
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, Menu, Bell } from 'lucide-react';
@@ -21,7 +21,7 @@ const ResponsiveLayout = ({
   }, []);
 
   const handleBack = () => {
-    console.log('Back button clicked'); // Debug log
+    console.log('Back button clicked');
     navigate('/');
   };
 
@@ -72,34 +72,43 @@ const ResponsiveLayout = ({
     </div>
   );
 
-  // If we want phone border (for chat/quiz views)
+  // FIXED: Phone border with proper responsive handling
   if (showPhoneBorder && !isMobile) {
     return (
-      <div className="w-screen h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex justify-center items-center overflow-hidden">
-        <Border>
-          {children}
-        </Border>
-      </div>
-    );
-  }
-
-  // Regular responsive layout
-  if (isMobile) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <MobileHeader />
-        <div className="pb-6">
-          {children}
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 to-gray-200 flex justify-center items-center p-4 overflow-auto">
+        <div className="w-full max-w-sm h-full max-h-[90vh] flex-shrink-0">
+          <Border>
+            <div className="h-full w-full overflow-auto">
+              {children}
+            </div>
+          </Border>
         </div>
       </div>
     );
   }
 
+  // FIXED: Mobile layout with proper overflow handling
+  if (isMobile) {
+    return (
+      <div className="min-h-screen w-full bg-gray-50 overflow-x-hidden">
+        <MobileHeader />
+        <div className="w-full px-4 py-6 pb-safe">
+          <div className="w-full max-w-full overflow-x-hidden">
+            {children}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // FIXED: Desktop layout with consistent width handling
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen w-full bg-gray-50 overflow-x-hidden">
       <DesktopHeader />
       <div className="w-full px-4 py-6">
-        {children}
+        <div className="w-full max-w-7xl mx-auto">
+          {children}
+        </div>
       </div>
     </div>
   );
