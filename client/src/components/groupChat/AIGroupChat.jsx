@@ -261,7 +261,7 @@ const AIGroupChat = ({ group, onBack }) => {
       className="h-full flex flex-col"
       style={{ 
         backgroundImage: "url('/waBackground.jpg')",
-        backgroundSize: 'cover',
+        backgroundSize: 'contain',      // Shows full image, may have empty space
         backgroundPosition: 'center',
         backgroundColor: '#fef7f7'
       }}

@@ -371,7 +371,6 @@ const AnalyticsPage = () => {
               Last updated: {new Date().toLocaleDateString('en-SG')} | 
               Next update: Quarterly | 
               Data completeness: 99.2% | 
-              <span className="text-blue-600 hover:underline cursor-pointer">View methodology details</span>
             </p>
           </div>
         </div>

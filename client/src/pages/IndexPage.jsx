@@ -1,18 +1,59 @@
-// src/pages/IndexPage.jsx - Updated with proper scheduler navigation
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import Border from '../components/phoneComponents/Border';
+import { X, ArrowLeft, MessageCircle, Settings, Brain, Activity, Heart, BarChart3, Users, Calendar } from 'lucide-react';
+
+// Import your components
 import GroupList from '../components/groupChat/GroupList';
+import RegularApp from '../components/RegularApp';
 import GroupChat from '../components/groupChat/GroupChat';
 import AIQuiz from '../components/groupChat/AIQuiz';
 import ResponsiveOSInterface from '../components/ResponsiveOSInterface';
+import AnalyticsPage from './AnalyticsPage';
+import CommunityPage from './CommunityPage';
+import DashboardPage from './DashboardPage';
+import PreventionPage from './PreventionPage';
+import ScreeningSchedulerPage from './ScreeningSchedulerPage';
 import { groupsData } from '../data/groupsData';
+
+const Border = ({ children, onClose }) => (
+  <div className="fixed inset-0 bg-gradient-to-br from-pink-100/80 via-rose-100/80 to-pink-200/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl h-[700px] overflow-hidden border border-gray-300">
+      {/* Mac-style Window Title Bar */}
+      <div className="bg-gradient-to-r from-gray-100 to-gray-200 px-4 py-3 border-b border-gray-300 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {/* Mac Window Control Buttons - ALL CLOSE */}
+          <div className="flex items-center gap-2">
+            <div 
+              onClick={onClose}
+              className="w-3 h-3 bg-red-400 rounded-full hover:bg-red-500 cursor-pointer"
+            ></div>
+            <div 
+              onClick={onClose}
+              className="w-3 h-3 bg-yellow-400 rounded-full hover:bg-yellow-500 cursor-pointer"
+            ></div>
+            <div 
+              onClick={onClose}
+              className="w-3 h-3 bg-green-400 rounded-full hover:bg-green-500 cursor-pointer"
+            ></div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+      
+      {/* Window Content */}
+      <div className="h-[calc(700px-56px)] overflow-auto">
+        {children}
+      </div>
+    </div>
+  </div>
+);
 
 const IndexPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [currentView, setCurrentView] = useState('os'); // Start with OS interface
+  const [currentView, setCurrentView] = useState('os');
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [currentApp, setCurrentApp] = useState(null);
 
   useEffect(() => {
     // Check if we should open a specific quiz from state
@@ -31,7 +72,7 @@ const IndexPage = () => {
   }, [location.state]);
 
   const handleAppSelect = (app) => {
-    console.log('App selected:', app); // Debug log
+    console.log('App selected:', app);
     
     switch (app.route) {
       case '/ai-quiz':
@@ -50,20 +91,25 @@ const IndexPage = () => {
         setSelectedGroup(groupsData[0]);
         setCurrentView('chat');
         break;
+      case '/analytics':
+        // Set analytics view directly
+        setCurrentView('analytics');
+        break;
       case '/dashboard':
-        navigate('/dashboard');
+        // Set dashboard view directly
+        setCurrentView('dashboard');
         break;
       case '/prevention':
-        navigate('/prevention');
+        // Set prevention view directly
+        setCurrentView('prevention');
         break;
       case '/community':
-        navigate('/community');
-        break;
-      case '/analytics':
-        navigate('/analytics');
+        // Set community view directly
+        setCurrentView('community');
         break;
       case '/scheduler':
-        navigate('/scheduler');  // FIXED: Navigate to scheduler page
+        // Set scheduler view directly
+        setCurrentView('scheduler');
         break;
       case '/settings':
         setCurrentView('settings');
@@ -81,44 +127,48 @@ const IndexPage = () => {
   const handleBackToOS = () => {
     setCurrentView('os');
     setSelectedGroup(null);
+    setCurrentApp(null);
   };
 
   const handleBackToList = () => {
     setCurrentView('list');
     setSelectedGroup(null);
+    setCurrentApp(null);
   };
 
-  // Check if OpenAI API key is configured
-  const isAIConfigured = !import.meta.env.VITE_OPENAI_API_KEY;
+  // Fix the API check logic
+  const isAIConfigured = !!import.meta.env.VITE_OPENAI_API_KEY;
 
-  // Render OS Interface (no phone border)
   if (currentView === 'os') {
     return <ResponsiveOSInterface onAppSelect={handleAppSelect} />;
   }
 
-  // Render other views in phone border for consistency
+  // Render other views in desktop popup style
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex justify-center items-center overflow-hidden">
-      <Border>
-        {currentView === 'list' ? (
+    <div className="w-screen h-screen bg-pink-50 flex justify-center items-center overflow-hidden">
+      <Border onClose={handleBackToOS}>
+        {currentView === 'analytics' ? (
+          // Render Analytics Page directly
+          <AnalyticsPage />
+        ) : currentView === 'dashboard' ? (
+          <DashboardPage />
+        ) : currentView === 'prevention' ? (
+          <PreventionPage />
+        ) : currentView === 'community' ? (
+          <CommunityPage />
+        ) : currentView === 'scheduler' ? (
+          <ScreeningSchedulerPage />
+        ) : currentView === 'list' ? (
           <div className="h-full flex flex-col">
-            {/* Header */}
-            <div className="bg-white p-4 border-b">
+            <div className="bg-pink-50 p-4 border-b border-pink-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">Health Assessments</h1>
+                  <h1 className="text-xl font-bold text-gray-800">Health Assessments</h1>
                   <p className="text-sm text-gray-600">Choose your health quiz</p>
                 </div>
-                <button 
-                  onClick={handleBackToOS}
-                  className="text-blue-600 text-sm font-medium hover:text-blue-800"
-                >
-                  ← Back to Home
-                </button>
               </div>
             </div>
 
-            {/* AI Status Indicator */}
             {!isAIConfigured && (
               <div className="bg-yellow-50 border-b border-yellow-200 p-3">
                 <div className="text-xs text-yellow-700 text-center">
@@ -127,8 +177,7 @@ const IndexPage = () => {
               </div>
             )}
             
-            {/* Quiz List */}
-            <div className="flex-1 bg-gray-50">
+            <div className="flex-1 bg-pink-50 overflow-y-auto">
               <GroupList 
                 groups={groupsData} 
                 onGroupSelect={handleGroupSelect} 
@@ -137,23 +186,19 @@ const IndexPage = () => {
           </div>
         ) : currentView === 'settings' ? (
           <div className="h-full flex flex-col">
-            {/* Settings View */}
-            <div className="bg-white p-4 border-b">
+            <div className="bg-pink-50 p-4 border-b border-pink-200">
               <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold text-gray-900">Settings</h1>
-                <button 
-                  onClick={handleBackToOS}
-                  className="text-blue-600 text-sm font-medium hover:text-blue-800"
-                >
-                  ← Back to Home
-                </button>
+                <div className="flex items-center gap-3">
+                  <Settings className="w-5 h-5 text-gray-600" />
+                  <h1 className="text-xl font-bold text-gray-800">Settings</h1>
+                </div>
               </div>
             </div>
             
-            <div className="flex-1 p-6 bg-gray-50">
+            <div className="flex-1 p-6 bg-pink-50 overflow-y-auto">
               <div className="space-y-4">
-                <div className="bg-white rounded-lg p-4 border">
-                  <h3 className="font-semibold text-gray-900 mb-2">API Configuration</h3>
+                <div className="bg-white rounded-lg p-4 border border-pink-200">
+                  <h3 className="font-semibold text-gray-800 mb-2">API Configuration</h3>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">OpenAI API Status</span>
                     <span className={`text-sm font-medium ${isAIConfigured ? 'text-green-600' : 'text-red-600'}`}>
@@ -162,8 +207,8 @@ const IndexPage = () => {
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-lg p-4 border">
-                  <h3 className="font-semibold text-gray-900 mb-2">About</h3>
+                <div className="bg-white rounded-lg p-4 border border-pink-200">
+                  <h3 className="font-semibold text-gray-800 mb-2">About</h3>
                   <p className="text-sm text-gray-600">
                     Singapore Health Platform v1.0
                   </p>
@@ -174,15 +219,20 @@ const IndexPage = () => {
 
                 <button
                   onClick={() => setCurrentView('list')}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  className="w-full bg-pink-500 text-white py-3 rounded-lg font-medium hover:bg-pink-600 transition-colors"
                 >
                   View Health Assessments
                 </button>
               </div>
             </div>
           </div>
+        ) : currentView === 'app' && currentApp ? (
+          <RegularApp 
+            appName={currentApp.name} 
+            appIcon={currentApp.icon} 
+            onBack={handleBackToOS} 
+          />
         ) : (
-          // Chat view - choose between regular chat and AI quiz
           <div className="h-full flex flex-col">
             {selectedGroup?.isAIQuiz ? (
               <AIQuiz 

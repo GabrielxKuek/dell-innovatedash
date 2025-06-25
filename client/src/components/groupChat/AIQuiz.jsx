@@ -1,7 +1,3 @@
-const handleBackToList = () => {
-    setCurrentView('list');
-    setSelectedGroup(null);
-  };// client/src/components/groupChat/AIQuiz.jsx
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Loader, AlertCircle } from 'lucide-react';
 import AIRiskEngine from '../../services/api/AIRiskEngine';
@@ -289,20 +285,20 @@ const AIQuiz = ({ group, onBack }) => {
 
   return (
     <div 
-      className="h-full flex flex-col"
+      className="h-full flex flex-col relative"
       style={{ 
         backgroundImage: "url('/waBackground.jpg')",
-        backgroundSize: 'cover',
+        backgroundSize: 'contain',
         backgroundPosition: 'center',
         backgroundColor: '#fef7f7'
       }}
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-primary to-pink-secondary text-white p-4 shadow-lg">
+      <div className="bg-gradient-to-r from-pink-500 to-pink-600 text-white p-4 shadow-lg">
         <div className="flex items-center">
           <button 
             onClick={onBack} 
-            className="mr-3 hover:bg-white/10 rounded-full p-1 transition-colors bg-white/20"
+            className="mr-3 hover:bg-white/10 rounded-full p-1 transition-colors text-white"
           >
             <ArrowLeft size={20} className="text-white" />
           </button>
@@ -346,20 +342,22 @@ const AIQuiz = ({ group, onBack }) => {
         </div>
       </div>
 
-      {/* Final Risk Assessment - Full Screen */}
+      {/* Final Risk Assessment - Properly Contained */}
       {isAssessmentComplete && (
-        <div className="absolute inset-0 bg-white z-50">
-          <FinalRiskDisplay 
-            riskAssessment={finalRiskAssessment}
-            isCalculating={isCalculatingFinalRisk}
-            onBack={handleBackToList}
-          />
+        <div className="absolute inset-0 bg-white z-50 flex flex-col">
+          <div className="h-full overflow-hidden">
+            <FinalRiskDisplay 
+              riskAssessment={finalRiskAssessment}
+              isCalculating={isCalculatingFinalRisk}
+              onBack={onBack}
+            />
+          </div>
         </div>
       )}
 
-      {/* Input Area */}
+      {/* Input Area - FIXED STYLING */}
       {!isAssessmentComplete && (
-        <div className="bg-white border-t border-gray-200 p-4">
+        <div className="bg-white p-4 border-t border-pink-200">
           <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
             <input
               type="text"
@@ -367,12 +365,12 @@ const AIQuiz = ({ group, onBack }) => {
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Type your response..."
               disabled={isAITyping}
-              className="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-primary focus:border-transparent text-sm disabled:opacity-50"
+              className="flex-1 p-3 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-800 bg-white placeholder-gray-500 text-sm disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!inputText.trim() || isAITyping}
-              className="bg-pink-primary text-white p-3 rounded-full hover:bg-pink-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-pink-500 text-white p-3 rounded-full hover:bg-pink-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send size={16} />
             </button>
@@ -390,10 +388,10 @@ const AIQuiz = ({ group, onBack }) => {
 
       {/* Assessment Complete Message */}
       {isAssessmentComplete && !finalRiskAssessment && !isCalculatingFinalRisk && (
-        <div className="bg-green-50 border-t border-green-200 p-4">
+        <div className="bg-pink-50 border-t border-pink-200 p-4">
           <div className="flex items-center justify-center space-x-2">
-            <AlertCircle className="w-5 h-5 text-green-600" />
-            <span className="text-sm text-green-700 font-medium">
+            <AlertCircle className="w-5 h-5 text-pink-500" />
+            <span className="text-sm font-medium text-pink-700">
               Assessment completed! Your risk analysis is ready.
             </span>
           </div>

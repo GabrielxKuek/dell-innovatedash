@@ -1,5 +1,5 @@
 // src/components/layout/ResponsiveLayout.jsx - FIXED WHITESPACE ISSUE
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, Menu, Bell } from 'lucide-react';
 import Border from '../phoneComponents/Border';
@@ -27,18 +27,7 @@ const ResponsiveLayout = ({
 
   const MobileHeader = () => (
     <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-      {showBackButton && (
-        <button 
-          onClick={handleBack} 
-          className="p-2 hover:bg-gray-100 rounded-full"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-      )}
       <h1 className="font-semibold text-gray-900">{title}</h1>
-      <button className="p-2 hover:bg-gray-100 rounded-full">
-        <Bell className="w-5 h-5" />
-      </button>
     </div>
   );
 
@@ -46,27 +35,7 @@ const ResponsiveLayout = ({
     <div className="bg-white shadow-sm border-b border-gray-200">
       <div className="w-full px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {showBackButton && (
-            <>
-              <button 
-                onClick={handleBack}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors cursor-pointer"
-              >
-                <Home className="w-5 h-5" />
-                Back to Health OS
-              </button>
-              <div className="h-6 w-px bg-gray-300"></div>
-            </>
-          )}
           <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <Bell className="w-5 h-5 text-gray-600" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <Menu className="w-5 h-5 text-gray-600" />
-          </button>
         </div>
       </div>
     </div>
