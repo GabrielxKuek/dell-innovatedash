@@ -48,8 +48,99 @@ const GroupChat = ({ group, onBack }) => {
         setMessages(prev => [...prev, botMessage]);
         setCurrentOptions(nextMessage.options || []);
         setCurrentFlow(option.nextId);
+      } else {
+        // If no next message found, provide a fallback to continue conversation
+        handleConversationEnd();
       }
     }, 1000);
+  };
+
+  const handleConversationEnd = () => {
+    // Create a fallback message to keep the conversation going
+    const fallbackMessage = {
+      id: Date.now() + 1,
+      type: 'received',
+      text: "Is there anything else you would like to know?",
+      timestamp: 'now'
+    };
+    
+    setMessages(prev => [...prev, fallbackMessage]);
+    
+    // Automatically provide the starting options again
+    const firstMessage = chatFlows[group.id]?.[1];
+    if (firstMessage && firstMessage.options) {
+      // Add an option to end the conversation along with the original options
+      const optionsWithEnd = [
+        ...firstMessage.options,
+        {
+          text: "No, I'm all set",
+          nextId: "end",
+          description: "End the conversation"
+        }
+      ];
+      setCurrentOptions(optionsWithEnd);
+    } else {
+      // Fallback if no starting options found
+      const fallbackOptions = [
+        {
+          text: "Start over",
+          nextId: 1,
+          description: "Begin from the start"
+        },
+        {
+          text: "No, I'm all set",
+          nextId: "end",
+          description: "End the conversation"
+        }
+      ];
+      setCurrentOptions(fallbackOptions);
+    }
+  };
+
+  const handleFallbackOption = (option) => {
+    const userMessage = {
+      id: Date.now(),
+      type: 'sent',
+      text: option.text,
+      timestamp: 'now'
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setCurrentOptions([]);
+
+    setTimeout(() => {
+      if (option.nextId === "end") {
+        // Final goodbye message
+        const goodbyeMessage = {
+          id: Date.now() + 1,
+          type: 'received',
+          text: "Thank you for chatting! Feel free to come back anytime if you have more questions.",
+          timestamp: 'now'
+        };
+        
+        setMessages(prev => [...prev, goodbyeMessage]);
+        setCurrentOptions([]); // No more options - conversation truly ends
+      }
+    }, 1000);
+  };
+
+
+
+  // Enhanced option select handler that handles both regular flow and fallback options
+  const enhancedHandleOptionSelect = (option) => {
+    // Check if this is a regular chat flow option
+    const isRegularFlow = chatFlows[group.id]?.[option.nextId];
+    
+    if (isRegularFlow || option.nextId === 1) {
+      // Handle regular chat flow or restart from beginning
+      handleOptionSelect(option);
+    } else if (option.nextId === "end") {
+      // Handle explicit end
+      handleFallbackOption(option);
+    } else {
+      // If nextId doesn't exist in flows, treat as conversation end
+      handleConversationEnd();
+    }
   };
 
   return (
@@ -102,7 +193,7 @@ const GroupChat = ({ group, onBack }) => {
       {/* Message Options - Using proper pink styling */}
       <PinkMessageOptions 
         options={currentOptions}
-        onOptionSelect={handleOptionSelect}
+        onOptionSelect={enhancedHandleOptionSelect}
       />
     </div>
   );
