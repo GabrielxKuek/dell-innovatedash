@@ -125,7 +125,7 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
           {/* Welcome Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4">
-              Singapore Health OS
+              Health OS
             </h1>
             <p className="text-xl text-gray-600 mb-8">
               Your Comprehensive Health Management Platform
