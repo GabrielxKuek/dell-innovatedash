@@ -429,10 +429,6 @@ const ScreeningSchedulerPage = () => {
       <div className="space-y-6">
         {/* Header with Quick Stats */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white shadow-lg">
-          <h1 className="text-2xl font-bold mb-2">Your Health Screening Hub</h1>
-          <p className="text-blue-100 mb-4">
-            Stay on top of your cancer screening schedule with personalized reminders and easy booking.
-          </p>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold">{userScreenings.filter(s => s.status === 'up-to-date').length}</div>

@@ -237,12 +237,6 @@ const CommunityHealthFeatures = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-gray-100 min-h-screen">
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Community Health Hub</h1>
-        <p className="text-gray-700 font-medium">Connect, learn, and stay healthy together with the Singapore health community</p>
-      </div>
-
       {/* Navigation Tabs */}
       <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
         <div className="flex border-b border-gray-200">

@@ -192,18 +192,6 @@ const EnhancedHealthDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Health Dashboard</h1>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg border">
-              <Shield className="w-4 h-4" />
-              <span className="font-medium">Data secured by Singapore PDPA</span>
-            </div>
-          </div>
-        </div>
 
         {/* Risk Scores */}
         <div className="grid md:grid-cols-2 gap-6 mb-6">
