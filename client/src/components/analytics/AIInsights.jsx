@@ -1,4 +1,4 @@
-// src/components/analytics/AIInsights.jsx - AI-Powered Health Insights
+// src/components/analytics/AIInsights.jsx - AI-Powered Health Insights (Fixed Contrast)
 import React, { useState } from 'react';
 import { 
   Brain, TrendingUp, AlertTriangle, Lightbulb, Target, 
@@ -23,57 +23,57 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
   const getInsightColor = (type, priority) => {
     if (priority === 'high') {
       return {
-        bg: 'bg-red-50',
-        border: 'border-red-200',
-        text: 'text-red-800',
-        icon: 'text-red-600'
+        bg: 'bg-red-900 bg-opacity-20',
+        border: 'border-red-400',
+        text: 'text-red-100',
+        icon: 'text-red-300'
       };
     }
     
     switch(type) {
       case 'trend': 
         return {
-          bg: 'bg-blue-50',
-          border: 'border-blue-200',
-          text: 'text-blue-800',
-          icon: 'text-blue-600'
+          bg: 'bg-blue-900 bg-opacity-20',
+          border: 'border-blue-400',
+          text: 'text-blue-100',
+          icon: 'text-blue-300'
         };
       case 'alert': 
         return {
-          bg: 'bg-red-50',
-          border: 'border-red-200',
-          text: 'text-red-800',
-          icon: 'text-red-600'
+          bg: 'bg-red-900 bg-opacity-20',
+          border: 'border-red-400',
+          text: 'text-red-100',
+          icon: 'text-red-300'
         };
       case 'recommendation': 
         return {
-          bg: 'bg-green-50',
-          border: 'border-green-200',
-          text: 'text-green-800',
-          icon: 'text-green-600'
+          bg: 'bg-green-900 bg-opacity-20',
+          border: 'border-green-400',
+          text: 'text-green-100',
+          icon: 'text-green-300'
         };
       case 'opportunity': 
         return {
-          bg: 'bg-yellow-50',
-          border: 'border-yellow-200',
-          text: 'text-yellow-800',
-          icon: 'text-yellow-600'
+          bg: 'bg-yellow-900 bg-opacity-20',
+          border: 'border-yellow-400',
+          text: 'text-yellow-100',
+          icon: 'text-yellow-300'
         };
       default: 
         return {
-          bg: 'bg-purple-50',
-          border: 'border-purple-200',
-          text: 'text-purple-800',
-          icon: 'text-purple-600'
+          bg: 'bg-purple-900 bg-opacity-20',
+          border: 'border-purple-400',
+          text: 'text-purple-100',
+          icon: 'text-purple-300'
         };
     }
   };
 
   const getPriorityBadge = (priority) => {
     const badges = {
-      high: 'bg-red-100 text-red-800 border-red-200',
-      medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      low: 'bg-green-100 text-green-800 border-green-200'
+      high: 'bg-red-800 bg-opacity-30 text-red-200 border-red-400',
+      medium: 'bg-yellow-800 bg-opacity-30 text-yellow-200 border-yellow-400',
+      low: 'bg-green-800 bg-opacity-30 text-green-200 border-green-400'
     };
     
     return (
@@ -95,9 +95,9 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
   };
 
   const getConfidenceColor = (confidence) => {
-    if (confidence >= 0.9) return 'text-green-600';
-    if (confidence >= 0.7) return 'text-yellow-600';
-    return 'text-red-600';
+    if (confidence >= 0.9) return 'text-green-300';
+    if (confidence >= 0.7) return 'text-yellow-300';
+    return 'text-red-300';
   };
 
   return (
@@ -128,11 +128,11 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
           return (
             <div
               key={insight.id}
-              className={`${colors.bg} ${colors.border} border rounded-lg p-4 transition-all duration-200 hover:shadow-md`}
+              className={`${colors.bg} ${colors.border} border rounded-lg p-4 transition-all duration-200 hover:shadow-md backdrop-blur-sm`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className={`p-2 bg-white rounded-lg ${colors.icon}`}>
+                  <div className={`p-2 bg-white bg-opacity-10 rounded-lg ${colors.icon}`}>
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1">
@@ -140,17 +140,17 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
                       <h3 className={`font-semibold ${colors.text}`}>{insight.title}</h3>
                       {getPriorityBadge(insight.priority)}
                     </div>
-                    <p className={`text-sm ${colors.text} mb-3`}>{insight.summary}</p>
+                    <p className={`text-sm ${colors.text} opacity-90 mb-3`}>{insight.summary}</p>
                     
                     {/* Confidence Score */}
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs text-gray-600">AI Confidence:</span>
+                      <span className="text-xs text-gray-300">AI Confidence:</span>
                       <div className="flex items-center gap-1">
-                        <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="w-16 h-2 bg-gray-700 bg-opacity-50 rounded-full overflow-hidden">
                           <div 
                             className={`h-full transition-all duration-300 ${
-                              insight.confidence >= 0.9 ? 'bg-green-500' :
-                              insight.confidence >= 0.7 ? 'bg-yellow-500' : 'bg-red-500'
+                              insight.confidence >= 0.9 ? 'bg-green-400' :
+                              insight.confidence >= 0.7 ? 'bg-yellow-400' : 'bg-red-400'
                             }`}
                             style={{ width: `${insight.confidence * 100}%` }}
                           ></div>
@@ -163,10 +163,10 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
 
                     {/* Expanded Content */}
                     {isExpanded && (
-                      <div className="space-y-4 mt-4 pt-4 border-t border-gray-200">
+                      <div className="space-y-4 mt-4 pt-4 border-t border-white border-opacity-20">
                         <div>
                           <h4 className={`font-medium ${colors.text} mb-2`}>Detailed Analysis</h4>
-                          <p className={`text-sm ${colors.text} leading-relaxed`}>
+                          <p className={`text-sm ${colors.text} opacity-90 leading-relaxed`}>
                             {insight.details}
                           </p>
                         </div>
@@ -176,7 +176,7 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
                             <h4 className={`font-medium ${colors.text} mb-2`}>Recommendations</h4>
                             <ul className="space-y-2">
                               {insight.recommendations.map((rec, index) => (
-                                <li key={index} className={`text-sm ${colors.text} flex items-start gap-2`}>
+                                <li key={index} className={`text-sm ${colors.text} opacity-90 flex items-start gap-2`}>
                                   <div className="w-1.5 h-1.5 bg-current rounded-full mt-2 flex-shrink-0"></div>
                                   {rec}
                                 </li>
@@ -190,18 +190,18 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
                           {!isAccepted ? (
                             <button
                               onClick={() => handleAcceptRecommendation(insight)}
-                              className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1"
+                              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors flex items-center gap-1"
                             >
                               <CheckCircle className="w-3 h-3" />
                               Accept Recommendation
                             </button>
                           ) : (
-                            <div className="flex items-center gap-1 text-green-600 text-sm">
+                            <div className="flex items-center gap-1 text-green-300 text-sm font-medium">
                               <CheckCircle className="w-4 h-4" />
                               Recommendation Accepted
                             </div>
                           )}
-                          <button className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50 transition-colors flex items-center gap-1">
+                          <button className="px-3 py-1.5 border border-gray-400 bg-white bg-opacity-10 text-gray-200 hover:bg-opacity-20 text-sm rounded-md transition-colors flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             Schedule Review
                           </button>
@@ -215,7 +215,7 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
                 {insight.expandable && (
                   <button
                     onClick={() => handleExpandToggle(insight.id)}
-                    className={`p-1 rounded-md hover:bg-white hover:bg-opacity-20 transition-colors ${colors.text}`}
+                    className={`p-1 rounded-md hover:bg-white hover:bg-opacity-10 transition-colors ${colors.text}`}
                   >
                     {isExpanded ? (
                       <ChevronUp className="w-4 h-4" />
@@ -253,9 +253,9 @@ const AIInsights = ({ insights, onAcceptRecommendation }) => {
           </div>
         </div>
         
-        <div className="mt-4 p-3 bg-white bg-opacity-10 rounded-lg">
-          <p className="text-xs text-white text-opacity-75 leading-relaxed">
-            <strong>AI Methodology:</strong> Analysis based on Singapore Cancer Registry data (2018-2022), 
+        <div className="mt-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-600">
+          <p className="text-xs text-gray-200 leading-relaxed">
+            <strong className="text-white">AI Methodology:</strong> Analysis based on Singapore Cancer Registry data (2018-2022), 
             National Population Health Survey (2023), and international health patterns. 
             Machine learning models trained on demographic, lifestyle, and clinical factors 
             specific to Singapore's multi-ethnic population.

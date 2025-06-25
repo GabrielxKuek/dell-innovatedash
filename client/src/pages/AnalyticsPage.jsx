@@ -188,60 +188,6 @@ const AnalyticsPage = () => {
   return (
     <ResponsiveLayout title="Health Analytics" showBackButton={true}>
       <div className="space-y-6">
-        {/* Control Panel */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Singapore Population Health Analytics</h2>
-            </div>
-            
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-gray-500" />
-                <select 
-                  value={selectedTimeRange}
-                  onChange={(e) => setSelectedTimeRange(e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-sm"
-                >
-                  <option value="2018-2022">2018-2022</option>
-                  <option value="2013-2017">2013-2017</option>
-                  <option value="2008-2012">2008-2012</option>
-                </select>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-gray-500" />
-                <select 
-                  value={selectedDemographic}
-                  onChange={(e) => setSelectedDemographic(e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-sm"
-                >
-                  <option value="all">All Demographics</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="chinese">Chinese</option>
-                  <option value="malay">Malay</option>
-                  <option value="indian">Indian</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Target className="w-4 h-4 text-gray-500" />
-                <select 
-                  value={selectedAnalysisType}
-                  onChange={(e) => setSelectedAnalysisType(e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-sm"
-                >
-                  <option value="overview">Overview</option>
-                  <option value="incidence">Cancer Incidence</option>
-                  <option value="screening">Screening Analysis</option>
-                  <option value="demographics">Demographics</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

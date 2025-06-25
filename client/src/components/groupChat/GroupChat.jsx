@@ -73,11 +73,7 @@ const GroupChat = ({ group, onBack }) => {
             <ArrowLeft size={20} className="text-white" />
           </button>
           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-            <img 
-              src={group.avatar} 
-              alt={group.name}
-              className="w-full h-full object-cover rounded-full"
-            />
+            <span className="text-lg">{group.avatar}</span>
           </div>
           <div className="flex-1">
             <h2 className="font-medium text-base text-white">{group.name}</h2>
@@ -118,7 +114,6 @@ const PinkMessageOptions = ({ options, onOptionSelect }) => {
     return (
       <div className="bg-white p-4" style={{ borderTop: '1px solid var(--color-pink-muted)' }}>
         <div className="text-center text-gray-500 text-sm">
-          Conversation complete
         </div>
       </div>
     );
