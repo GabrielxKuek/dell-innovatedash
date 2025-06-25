@@ -314,9 +314,7 @@ const AnalyticsPage = () => {
           </div>
           <div className="mt-4 pt-4 border-t border-gray-200">
             <p className="text-xs text-gray-500">
-              Last updated: {new Date().toLocaleDateString('en-SG')} | 
-              Next update: Quarterly | 
-              Data completeness: 99.2% | 
+              Last updated: {new Date().toLocaleDateString('en-SG')}
             </p>
           </div>
         </div>
