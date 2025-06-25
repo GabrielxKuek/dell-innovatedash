@@ -168,14 +168,6 @@ const IndexPage = () => {
                 </div>
               </div>
             </div>
-
-            {!isAIConfigured && (
-              <div className="bg-yellow-50 border-b border-yellow-200 p-3">
-                <div className="text-xs text-yellow-700 text-center">
-                  ⚠️ AI features disabled - OpenAI API key not configured
-                </div>
-              </div>
-            )}
             
             <div className="flex-1 bg-pink-50 overflow-y-auto">
               <GroupList 

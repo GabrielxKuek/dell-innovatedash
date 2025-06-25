@@ -16,15 +16,7 @@ const GroupItem = ({ group, onSelect }) => {
             ? 'bg-gradient-to-br from-purple-500 to-pink-500 ring-purple-300 text-2xl'
             : 'bg-gradient-to-br from-pink-primary to-pink-secondary ring-pink-muted'
         }`}>
-          {group.isAIQuiz ? (
-            <span className="text-white">{group.avatar}</span>
-          ) : (
-            <img 
-              src={group.avatar} 
-              alt={group.name}
-              className="w-full h-full object-cover rounded-full"
-            />
-          )}
+          <span className="text-lg">{group.avatar}</span>
         </div>
         
         {/* Content */}

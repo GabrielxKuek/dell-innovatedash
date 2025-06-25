@@ -1,29 +1,31 @@
-/* src/styles/index.css - UPDATED FOR TAILWIND V4 WITH WHITESPACE FIXES */
+/* src/styles/index.css - FIXED BUTTON VISIBILITY ISSUES */
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
+/* FIXED: Light mode as default */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* FIXED: Light mode colors as default */
+  color: #213547;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* FIXED: Prevent horizontal overflow */
   overflow-x: hidden;
   width: 100%;
   height: 100%;
   
+  /* FIXED: Light mode theme variables as default */
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -39,7 +41,7 @@
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.871 0.006 286.286);
@@ -68,21 +70,17 @@ a:hover {
   color: #535bf2;
 }
 
-/* FIXED: Body styling with overflow prevention */
 body {
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  /* FIXED: Prevent horizontal overflow */
   overflow-x: hidden;
   width: 100%;
-  /* Better touch scrolling on mobile */
   -webkit-overflow-scrolling: touch;
 }
 
-/* FIXED: Root element styling */
 #root {
   overflow-x: hidden;
   min-height: 100vh;
@@ -94,42 +92,27 @@ h1 {
   line-height: 1.1;
 }
 
+/* FIXED: Completely reset button styling to prevent conflicts */
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  /* Remove all default styling that could conflict */
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
   cursor: pointer;
-  transition: border-color 0.25s;
-  /* FIXED: Better touch targets */
+  outline: inherit;
+  padding: 0;
+  margin: 0;
+  /* Set minimum touch target size */
   min-height: 44px;
   min-width: 44px;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
+/* FIXED: Dark mode styles only apply when .dark class is present */
 .dark {
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+  
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.141 0.005 285.823);
@@ -162,6 +145,20 @@ button:focus-visible {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
+}
+
+/* FIXED: Only apply dark mode button styles in dark mode */
+.dark button {
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  transition: border-color 0.25s;
+}
+
+.dark button:hover {
+  border-color: #646cff;
 }
 
 @theme inline {
@@ -203,29 +200,29 @@ button:focus-visible {
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* breast cancer awareness colors */
-  --color-pink-primary: oklch(0.724 0.194 336.8);      /* Pink-500 equivalent */
-  --color-pink-secondary: oklch(0.689 0.205 356.3);    /* Rose-500 equivalent */
-  --color-pink-accent: oklch(0.977 0.024 340.7);       /* Pink-50 equivalent */
-  --color-pink-muted: oklch(0.933 0.048 340.7);        /* Pink-100 equivalent */
+  --color-pink-primary: oklch(0.724 0.194 336.8);
+  --color-pink-secondary: oklch(0.689 0.205 356.3);
+  --color-pink-accent: oklch(0.977 0.024 340.7);
+  --color-pink-muted: oklch(0.933 0.048 340.7);
   
-  /* FIXED: Health app specific colors */
-  --color-health-primary: oklch(0.646 0.222 41.116);   /* Orange for energy */
-  --color-health-secondary: oklch(0.6 0.118 184.704);  /* Teal for calm */
-  --color-health-success: oklch(0.769 0.188 70.08);    /* Green for success */
-  --color-health-warning: oklch(0.828 0.189 84.429);   /* Yellow for warning */
-  --color-health-danger: oklch(0.577 0.245 27.325);    /* Red for danger */
+  /* Health app specific colors */
+  --color-health-primary: oklch(0.646 0.222 41.116);
+  --color-health-secondary: oklch(0.6 0.118 184.704);
+  --color-health-success: oklch(0.769 0.188 70.08);
+  --color-health-warning: oklch(0.828 0.189 84.429);
+  --color-health-danger: oklch(0.577 0.245 27.325);
   
-  /* FIXED: Singapore theme colors */
-  --color-sg-red: oklch(0.577 0.245 27.325);           /* Singapore red */
-  --color-sg-white: oklch(0.985 0 0);                  /* Singapore white */
+  /* Singapore theme colors */
+  --color-sg-red: oklch(0.577 0.245 27.325);
+  --color-sg-white: oklch(0.985 0 0);
   
-  /* FIXED: Safe area and spacing variables */
+  /* Safe area and spacing variables */
   --safe-area-top: env(safe-area-inset-top);
   --safe-area-bottom: env(safe-area-inset-bottom);
   --safe-area-left: env(safe-area-inset-left);
   --safe-area-right: env(safe-area-inset-right);
   
-  /* FIXED: Container max-widths */
+  /* Container max-widths */
   --container-sm: 640px;
   --container-md: 768px;
   --container-lg: 1024px;
@@ -233,69 +230,84 @@ button:focus-visible {
   --container-2xl: 1536px;
 }
 
-@layer base {
-  /* Fix the button color inheritance issue */
-  button:not([class*="bg-"]):not([class*="btn-"]) {
-    /* Light mode default - since you're using bg-pink-50 */
-    background-color: white;
-    color: #374151; /* gray-700 */
-    border: 1px solid #d1d5db; /* gray-300 */
-  }
-  
-  button:not([class*="bg-"]):not([class*="btn-"]):hover {
-    background-color: #f9fafb; /* gray-50 */
-    border-color: #9ca3af; /* gray-400 */
-  }
+/* REMOVED: All conflicting button base layer styles */
 
-  /* For your specific pink theme, ensure good contrast */
-  .bg-pink-50 button:not([class*="bg-"]):not([class*="btn-"]) {
-    background-color: white;
-    color: #374151;
-    border: 1px solid #fecaca; /* pink-200 */
-  }
-
-  .bg-pink-50 button:not([class*="bg-"]):not([class*="btn-"]):hover {
-    background-color: #fdf2f8; /* pink-50 */
-    border-color: #f9a8d4; /* pink-300 */
-  }
-}
-
-/* If you want to completely disable the CSS reset for buttons, add this */
-@layer components {
-  .button-reset-override {
-    background: revert !important;
-    border: revert !important;
-    padding: revert !important;
-    color: revert !important;
-  }
-}
-
-/* Quick fix utility classes you can add to problematic buttons */
+/* FIXED: Simple, reliable button utilities */
 @layer utilities {
-  .btn-visible {
+  .btn-primary {
+    background-color: #dc2626 !important; /* red-600 */
+    color: white !important;
+    border: 1px solid #dc2626 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+  }
+  
+  .btn-primary:hover {
+    background-color: #b91c1c !important; /* red-700 */
+    border-color: #b91c1c !important;
+  }
+  
+  .btn-secondary {
+    background-color: #ca8a04 !important; /* yellow-600 */
+    color: white !important;
+    border: 1px solid #ca8a04 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #a16207 !important; /* yellow-700 */
+    border-color: #a16207 !important;
+  }
+  
+  .btn-outline {
+    background-color: transparent !important;
+    color: #16a34a !important; /* green-600 */
+    border: 1px solid #16a34a !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+  }
+  
+  .btn-outline:hover {
+    background-color: #f0fdf4 !important; /* green-50 */
+    color: #15803d !important; /* green-700 */
+  }
+  
+  .btn-default {
     background-color: white !important;
-    color: #374151 !important;
-    border: 1px solid #d1d5db !important;
+    color: #374151 !important; /* gray-700 */
+    border: 1px solid #d1d5db !important; /* gray-300 */
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
   }
   
-  .btn-visible:hover {
-    background-color: #f9fafb !important;
-    border-color: #9ca3af !important;
+  .btn-default:hover {
+    background-color: #f9fafb !important; /* gray-50 */
+    border-color: #9ca3af !important; /* gray-400 */
   }
   
-  .btn-pink-visible {
-    background-color: #fce7f3 !important; /* pink-100 */
-    color: #be185d !important; /* pink-700 */
-    border: 1px solid #f9a8d4 !important; /* pink-300 */
+  /* Dark mode button styles */
+  .dark .btn-default {
+    background-color: #374151 !important; /* gray-700 */
+    color: white !important;
+    border: 1px solid #6b7280 !important; /* gray-500 */
   }
   
-  .btn-pink-visible:hover {
-    background-color: #fbb6ce !important; /* pink-200 */
-    border-color: #ec4899 !important; /* pink-500 */
+  .dark .btn-default:hover {
+    background-color: #4b5563 !important; /* gray-600 */
+    border-color: #9ca3af !important; /* gray-400 */
   }
 }
 
-/* FIXED: Keyframe animations */
+/* Keyframe animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -323,7 +335,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Mobile-specific improvements */
+/* Mobile-specific improvements */
 @media (max-width: 768px) {
   body {
     -webkit-overflow-scrolling: touch;
@@ -338,7 +350,6 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
   
-  /* Better touch targets on mobile */
   button,
   [role="button"],
   input[type="button"],
@@ -349,7 +360,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Tablet responsiveness */
+/* Tablet responsiveness */
 @media (min-width: 769px) and (max-width: 1024px) {
   .responsive-grid-apps {
     grid-template-columns: repeat(4, 1fr);
@@ -360,7 +371,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Desktop improvements */
+/* Desktop improvements */
 @media (min-width: 1025px) {
   .responsive-grid-apps {
     grid-template-columns: repeat(6, 1fr);
@@ -370,7 +381,6 @@ button:focus-visible {
     grid-template-columns: repeat(3, 1fr);
   }
   
-  /* Better hover effects on desktop */
   .hover\:scale-105:hover {
     transform: scale(1.05);
   }
@@ -380,7 +390,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Large screen optimizations */
+/* Large screen optimizations */
 @media (min-width: 1440px) {
   .container-constrained {
     max-width: 1400px;
@@ -395,7 +405,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Print styles */
+/* Print styles */
 @media print {
   .no-print {
     display: none !important;
@@ -417,7 +427,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Accessibility - Reduced motion */
+/* Accessibility - Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -435,7 +445,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: High contrast mode */
+/* High contrast mode */
 @media (prefers-contrast: high) {
   .glass-effect {
     background: oklch(var(--color-background)) !important;
@@ -443,7 +453,7 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Custom scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -462,24 +472,8 @@ button:focus-visible {
   background: oklch(from var(--color-muted-foreground) l c h / 0.5);
 }
 
-/* FIXED: Selection styles */
+/* Selection styles */
 ::selection {
   background-color: oklch(from var(--color-primary) l c h / 0.3);
   color: inherit;
-}
-
-@layer base {
-  button:not([class*="bg-"]):not([class*="btn-"]) {
-    background-color: white !important;
-    color: #374151 !important;
-    border: 1px solid #fecaca !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: 0.5rem !important;
-    transition: all 0.2s !important;
-  }
-  
-  button:not([class*="bg-"]):not([class*="btn-"]):hover {
-    background-color: #fdf2f8 !important;
-    border-color: #f9a8d4 !important;
-  }
 }
