@@ -355,7 +355,7 @@ const AIQuiz = ({ group, onBack }) => {
         </div>
       )}
 
-      {/* Input Area - FIXED STYLING */}
+      {/* Input Area */}
       {!isAssessmentComplete && (
         <div className="bg-white p-4 border-t border-pink-200">
           <form onSubmit={handleSendMessage} className="flex items-center space-x-2">

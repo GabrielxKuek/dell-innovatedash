@@ -125,7 +125,7 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
           {/* Welcome Section */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4">
-              Health OS
+              Screen-Play
             </h1>
             <p className="text-xl text-gray-600 mb-8">
               Your Comprehensive Health Management Platform
@@ -213,7 +213,7 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
           <div className="w-4 h-4 bg-pink-300 rounded-full flex items-center justify-center">
             <div className="w-2 h-2 bg-pink-600 rounded-full"></div>
           </div>
-          <span className="font-medium">Health OS</span>
+          <span className="font-medium">Screen-Play</span>
         </div>
         <div className="flex items-center gap-3">
           <Wifi className="w-4 h-4" />
@@ -228,7 +228,7 @@ const ResponsiveOSInterface = ({ onAppSelect }) => {
       <div className="px-4 py-6 pb-24 min-h-[calc(100vh-3rem)]">
         {/* Welcome Section */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Health OS</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Screen-Play</h1>
           <p className="text-gray-600">Your health companion</p>
         </div>
 

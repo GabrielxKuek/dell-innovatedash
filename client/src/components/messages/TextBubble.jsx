@@ -33,11 +33,6 @@ const TextBubble = ({ message, type, timestamp, isAI = false }) => {
             {message}
           </div>
           
-          {/* Enhanced styling for AI messages */}
-          {isAI && isReceived && (
-            <div className="absolute -left-1 top-3 w-2 h-2 bg-gradient-to-r from-pink-primary to-pink-secondary rounded-full opacity-60"></div>
-          )}
-          
           {/* Timestamp */}
           <div className={`
             text-xs mt-1 opacity-70

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { chatFlows } from '../../data/treatmentData';
 import TextBubble from '../messages/TextBubble';
-import MessageOptions from '../messages/MessageOptions';
 
 const GroupChat = ({ group, onBack }) => {
   const [currentFlow, setCurrentFlow] = useState(1);
@@ -123,8 +122,6 @@ const GroupChat = ({ group, onBack }) => {
       }
     }, 1000);
   };
-
-
 
   // Enhanced option select handler that handles both regular flow and fallback options
   const enhancedHandleOptionSelect = (option) => {
