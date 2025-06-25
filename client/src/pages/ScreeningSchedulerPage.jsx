@@ -393,7 +393,7 @@ const ScreeningSchedulerPage = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Resources</h3>
         <div className="space-y-3">
           <a
-            href="https://www.moh.gov.sg/resources-statistics/educational-resources/screening"
+            href="https://hpp.moh.gov.sg/search/?q=cpg+cancer+screening+pdf&scope=domain"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
@@ -411,7 +411,7 @@ const ScreeningSchedulerPage = () => {
             Singapore Cancer Society
           </a>
           <a
-            href="https://www.hpb.gov.sg/healthy-living/disease-and-conditions/cancer"
+            href="https://www.healthhub.sg/programmes/healthiersg-screening"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
