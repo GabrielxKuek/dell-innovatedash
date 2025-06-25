@@ -239,24 +239,27 @@ const CommunityHealthFeatures = () => {
     <div className="max-w-6xl mx-auto p-6 bg-gray-100 min-h-screen">
       {/* Navigation Tabs */}
       <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
-        <div className="flex border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:border-b sm:border-gray-200">
           {[
-            { key: 'challenges', label: 'Health Challenges', icon: Trophy },
-            { key: 'groups', label: 'Support Groups', icon: Users },
-            { key: 'events', label: 'Local Events', icon: Calendar },
-            { key: 'achievements', label: 'Achievements', icon: Star }
-          ].map(({ key, label, icon: Icon }) => (
+            { key: 'challenges', label: 'Health Challenges', shortLabel: 'Challenges', icon: Trophy },
+            { key: 'groups', label: 'Support Groups', shortLabel: 'Groups', icon: Users },
+            { key: 'events', label: 'Local Events', shortLabel: 'Events', icon: Calendar },
+            { key: 'achievements', label: 'Achievements', shortLabel: 'Achievements', icon: Star }
+          ].map(({ key, label, shortLabel, icon: Icon }) => (
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 font-semibold transition-colors ${
+              className={`flex items-center justify-start sm:justify-center gap-3 sm:gap-2 py-6 px-6 sm:py-4 sm:px-6 font-semibold transition-colors sm:flex-1 border-b border-gray-200 sm:border-b-0 last:border-b-0 sm:last:border-b-0 ${
                 activeTab === key
-                  ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50'
+                  ? 'sm:border-b-2 sm:border-blue-600 text-blue-600 bg-blue-50'
                   : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              <Icon className="w-4 h-4" />
-              {label}
+              <Icon className="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span className="text-base sm:text-sm md:text-base">
+                <span className="sm:hidden">{shortLabel}</span>
+                <span className="hidden sm:inline">{label}</span>
+              </span>
             </button>
           ))}
         </div>
