@@ -118,3 +118,90 @@ Screen-Play addresses the critical need for cancer awareness in Singapore by:
 - Reducing barriers to cancer screening
 - Building supportive communities around prevention
 - Leveraging technology for social good
+
+# The Team
+
+<table>
+    <tr>
+        <td align="center">
+            <a href="https://github.com/GabrielxKuek">
+                <img src="https://avatars.githubusercontent.com/u/139882011?v=4" width="100px;" alt="Gabriel, All-seeing"/><br>
+                <sub>
+                    <b>Gabriel</b>
+                </sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/xR4F4ELx">
+                <img src="https://avatars.githubusercontent.com/u/101986187?v=4" width="100px;" alt="Rafael Profile Picture"/><br>
+                <sub>
+                    <b>Rafael</b>
+                </sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/aace1">
+                <img src="https://avatars.githubusercontent.com/u/208421193?v=4" width="100px;" alt="Ace Picture"/><br>
+                <sub>
+                    <b>Ace</b>
+                </sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/jyikkk">
+                <img src="https://avatars.githubusercontent.com/u/208419559?v=4" width="100px;" alt="Jia Yik Profile Picture"/><br>
+                <sub>
+                    <b>Jia Yik</b>
+                </sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/ZhooouYN">
+                <img src="https://avatars.githubusercontent.com/u/208423209?v=4" width="100px;" alt="Yi Ning Profile Picture"/><br>
+                <sub>
+                    <b>Yi Ning</b>
+                </sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://github.com/JoenC25">
+                <img src="https://avatars.githubusercontent.com/u/167388675?v=4" width="100px;" alt="Joen Profile Picture"/><br>
+                <sub>
+                    <b>Joen</b>
+                </sub>
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <a href="https://www.credential.net/ef3d1325-cefb-402b-bde4-a03a06aa757b">
+                certificate
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://www.credential.net/ef3d1325-cefb-402b-bde4-a03a06aa757b">
+                certificate
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://www.credential.net/ef3d1325-cefb-402b-bde4-a03a06aa757b">
+                certificate
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://www.credential.net/ef3d1325-cefb-402b-bde4-a03a06aa757b">
+                certificate
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://www.credential.net/ef3d1325-cefb-402b-bde4-a03a06aa757b">
+                certificate
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://www.credential.net/ef3d1325-cefb-402b-bde4-a03a06aa757b">
+                certificate
+            </a>
+        </td>
+    </tr>
+</table>
