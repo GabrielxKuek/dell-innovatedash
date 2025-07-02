@@ -63,7 +63,7 @@
 - **AI Integration**: Seamless OpenAI API integration for intelligent assessments
 - **Responsive Design**: Adaptive UI that works across all devices
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js v22.15.0 or later
@@ -96,7 +96,7 @@
 5. **Open your browser**
    Navigate to `http://localhost:5173`
 
-## 🛠️ Tech Stack
+## 🛠Tech Stack
 
 - **Frontend**: React + Vite
 - **AI**: OpenAI
@@ -104,14 +104,14 @@
 - **Architecture**: Cloud-Native, Kubernetes-ready
 - **Styling**: TailwindCSS with macOS-inspired components
 
-## 🏆 Achievements
+## Achievements
 
 - 🥈 **1st Runner Up** - Dell Innovate Dash Hackathon
 - 🎯 **Finalist** - Singapore Polytechnic Dell Innovate Dash Hackathon
 - 🤝 **Partnership** - Singapore Cancer Society Collaboration
 - 🌟 **Impact** - Spreading cancer awareness through gamification
 
-## 📈 Impact
+## Impact
 
 Screen-Play addresses the critical need for cancer awareness in Singapore by:
 - Making health information accessible and engaging
